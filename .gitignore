@@ -1,0 +1,21 @@
+# Dados pessoais de quem estuda: nunca versionar
+perfil.md
+materiais/*
+!materiais/.gitkeep
+banco/*
+!banco/LEIAME.md
+sessoes/*
+!sessoes/.gitkeep
+desempenho/*
+!desempenho/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Sistema
+.DS_Store
+Thumbs.db
+.claude/settings.local.json

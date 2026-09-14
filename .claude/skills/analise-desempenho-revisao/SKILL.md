@@ -5,7 +5,7 @@ description: Fecha uma sessão de revisão (discursiva ou objetiva). Consolida o
 
 # Análise de desempenho e material de revisão
 
-Ordem obrigatória: **consolidar → analisar → PDF → flashcards → resumo no chat.**
+Ordem obrigatória: **consolidar → analisar → PDF → flashcards → dashboard → resumo no chat.**
 Consolidar primeiro garante que o histórico é salvo mesmo se algo falhar depois.
 
 ## 1. Consolidar (script, sem reescrever nada à mão)
@@ -52,7 +52,19 @@ Com a saída de `metricas` (não releia o `sessao.jsonl` inteiro, a menos que pr
    enviar os cards para o deck `Revisão em voz alta::<Disciplina>`; se não houver, oriente a importação:
    Anki → Arquivo → Importar → `flashcards.tsv` → separador Tab, permitir HTML, campo 3 = Tags.
 
-## 5. Entrega no chat
+## 5. Atualizar o dashboard
+O `consolidar` e o `cards` já regeneram `dashboard/dados.js`; falta só publicar.
+- **Ferramenta Artifact disponível:**
+  - Leia `desempenho/dashboard.json`.
+  - **Sem URL:** publique `dashboard/index.html` com
+    `files: {"dados.js": "dashboard/dados.js", "dados.exemplo.js": "dashboard/dados.exemplo.js"}`, favicon `📈` e
+    descrição "Painel de desempenho das sessões de revisão". Grave `{"url": "<url>"}` em `desempenho/dashboard.json`.
+  - **Com URL:** publique de novo com `url` e o mesmo `files` (mesmo link; cada publicação vira uma versão). Se a
+    publicação for recusada por o artefato não ter sido lido nesta conversa, faça `action: "read"` nessa URL e publique de novo.
+- **Sem a ferramenta Artifact:** diga que basta abrir `dashboard/index.html` no navegador (os dados já estão atualizados).
+- Consolidação de sessão pendente disparada na abertura de outra sessão: **não** publique; a próxima sessão encerrada publica tudo.
+
+## 6. Entrega no chat
 Envie o PDF e o TSV (use a ferramenta de envio de arquivos, se existir) e escreva um resumo curto:
 ```
 **Sessão <tema>** — <n> perguntas · nota média <x>
@@ -60,5 +72,5 @@ Envie o PDF e o TSV (use a ferramenta de envio de arquivos, se existir) e escrev
 **Pior:** <tópicos e lacunas centrais>
 **Revisões anteriores:** <surtiram efeito? ↑↓=>
 **Rumos:** <3 ações concretas e datas das próximas revisões (do painel)>
-Arquivos: revisao.pdf · flashcards.tsv (<k> cards)
+Arquivos: revisao.pdf · flashcards.tsv (<k> cards) · Dashboard: <link ou dashboard/index.html>
 ```

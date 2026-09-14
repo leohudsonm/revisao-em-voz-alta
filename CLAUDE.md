@@ -10,6 +10,7 @@ entrega um PDF de revisão dirigido às lacunas e flashcards.
 | Revisar para **prova discursiva**, dissertação, sentença, peça, oral | `revisao-discursiva-oral` |
 | Revisar para **prova objetiva** (múltipla escolha ou certo/errado) | `revisao-objetiva` |
 | "Encerrar", "fechar a sessão", "gerar o material/PDF", "flashcards das lacunas" | `analise-desempenho-revisao` |
+| "Abrir/atualizar o dashboard", "ver meu desempenho" | `python scripts/sessao.py exportar` e publicar como no passo 5 de `analise-desempenho-revisao` |
 
 Se o pedido não deixar claro o modo, pergunte uma única vez: discursiva ou objetiva.
 
@@ -38,5 +39,6 @@ Se o pedido não deixar claro o modo, pergunte uma única vez: discursiva ou obj
 - `materiais/<slug>/`: `original.*`, `texto.md`, `indice.md` (gerados por `scripts/extrair_material.py`).
 - `banco/`: questões e espelhos que a pessoa tiver (opcional).
 - `sessoes/<data>_<tema>/`: `meta.json`, `sessao.jsonl`, `revisao.md`, `revisao.pdf`, `flashcards.tsv`.
-- `desempenho/`: `painel.md` e `topicos/` (gerados); `estado.json` (só o script lê).
+- `desempenho/`: `painel.md` e `topicos/` (gerados); `estado.json` (só o script lê); `dashboard.json` (URL do artefato).
+- `dashboard/`: `index.html` (painel), `dados.js` (gerado pelo script; nunca ler), `dados.exemplo.js` (demonstração).
 - Dependências: `pip install -r requirements.txt`. No Windows, se `python` não existir, tente `py`.

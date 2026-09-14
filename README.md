@@ -40,6 +40,18 @@ No fim de qualquer sessão, a skill `analise-desempenho-revisao` consolida o his
 
 Tem questões e espelhos de provas anteriores? Coloque em `banco/`: as skills usam como base de perguntas e rubricas.
 
+## Dashboard
+`dashboard/index.html` mostra o histórico em cinco abas:
+- **Visão geral:** tempo, sessões, nota média, revisões atrasadas, sequência de dias, calendário de constância, estudo semanal e cartões por disciplina.
+- **Disciplinas:** evolução das notas (discursiva e objetiva) e tabela de tópicos com lacunas e erros.
+- **Pauta de revisões:** atrasadas, hoje, próximos 7 dias e programadas.
+- **Histórico:** todas as sessões, com duração estimada e notas por tópico.
+- **Lacunas e erros:** ranking de lacunas, erros conceituais, tipos de erro nas objetivas e calibragem da certeza.
+
+Ao encerrar cada sessão, `scripts/sessao.py` regenera `dashboard/dados.js`. No Claude Code com Artifacts, o painel é
+republicado no mesmo link, e cada publicação fica como uma versão. Sem Artifacts, basta abrir `dashboard/index.html`
+no navegador. Sem histórico ainda, o painel mostra **dados de exemplo** fictícios (`dados.exemplo.js`), marcados como tal.
+
 ## Como o histórico fica barato (tokens)
 Ler um histórico longo antes de cada sessão sairia caro. Por isso:
 - **Um script é dono do histórico.** `scripts/sessao.py` grava tudo em `desempenho/estado.json`, que o Claude **não lê**.

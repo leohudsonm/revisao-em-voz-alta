@@ -16,6 +16,7 @@ Comandos:
     consolidar SESSAO             atualiza estado.json e regenera painel e arquivos de tópico
     cards SESSAO                  remove flashcards duplicados do TSV e registra os novos
     topico DISCIPLINA TOPICO      mostra o arquivo de detalhe do tópico
+    exportar [--exemplo]          gera dashboard/dados.js (ou dados.exemplo.js) para o dashboard
 """
 from __future__ import annotations
 
@@ -511,6 +512,7 @@ def cmd_consolidar(args) -> None:
         print(f"- {t['disciplina']} · {t['topico']}: nível {t['nivel']:.1f} ({t['tendencia']}) · próxima {t['proxima']}")
     n_linhas = len(PAINEL.read_text(encoding="utf-8").splitlines())
     print(f"painel.md: {n_linhas} linhas (limite {LIMITE_LINHAS_PAINEL})")
+    print(f"dashboard: {exportar().relative_to(RAIZ).as_posix()} atualizado")
 
 
 def cmd_cards(args) -> None:
@@ -547,6 +549,7 @@ def cmd_cards(args) -> None:
     gravar_json(ESTADO, estado)
     for k in tocados:
         render_topico(estado["topicos"][k])
+    exportar()
     total = sum(1 for l in manter if l.strip() and not l.startswith("#"))
     print(f"flashcards.tsv: {total} cards · duplicados removidos: {len(duplicados)}")
     for d in duplicados:
@@ -556,6 +559,182 @@ def cmd_cards(args) -> None:
               "e use a tag exata `slug-disciplina::slug-topico`):")
         for s in sem_topico:
             print(f"  - {s}")
+
+
+# ---------------------------------------------------------------- exportação para o dashboard
+DASHBOARD = RAIZ / "dashboard"
+
+
+def ler_perfil() -> dict:
+    p = RAIZ / "perfil.md"
+    if not p.exists():
+        return {}
+    campos = {"cargo-alvo": "cargo", "orgao-tribunal": "orgao", "banca-provavel": "banca",
+              "fase-atual": "fase", "data-da-prova": "data_prova"}
+    perfil = {}
+    for linha in p.read_text(encoding="utf-8").splitlines():
+        m = re.match(r"\s*-\s*\*\*(.+?):\*\*\s*(.*)", linha)
+        if m and slug(m.group(1)) in campos:
+            valor = re.sub(r"<!--.*?-->", "", m.group(2)).strip()
+            perfil[campos[slug(m.group(1))]] = valor
+    if not re.match(r"^\d{4}-\d{2}-\d{2}$", perfil.get("data_prova", "")):
+        perfil.pop("data_prova", None)
+    return perfil
+
+
+def duracao_minutos(regs: list[dict]) -> int:
+    horarios = sorted(dt.datetime.fromisoformat(r["registrado_em"]) for r in regs if r.get("registrado_em"))
+    if not horarios:
+        return 0
+    gaps = [(b - a).total_seconds() / 60 for a, b in zip(horarios, horarios[1:])]
+    uteis = sorted(g for g in gaps if g <= 30)
+    mediana = uteis[len(uteis) // 2] if uteis else 4.0
+    return max(1, round(sum(uteis) + mediana))
+
+
+def montar_dados() -> dict:
+    estado = carregar_estado()
+    sessoes, series, ordem_disc = [], {}, []
+    calib = {c: {"n": 0, "acertos": 0} for c in NOTA_OBJETIVA}
+    for m in sorted(SESSOES.glob("*/meta.json")) if SESSOES.exists() else []:
+        meta = ler_json(m, {})
+        regs = ler_registros(m.parent)
+        if not meta.get("consolidada") or not regs:
+            continue
+        data = data_sessao(meta)
+        obj = [r for r in regs if r["tipo"] == "objetiva"]
+        tipos: dict[str, int] = {}
+        for r in obj:
+            calib[r["certeza"]]["n"] += 1
+            calib[r["certeza"]]["acertos"] += int(r["acertou"])
+            if r.get("tipo_erro"):
+                tipos[r["tipo_erro"]] = tipos.get(r["tipo_erro"], 0) + 1
+        por_topico = []
+        for k, rs in agrupar(regs).items():
+            d = rs[0]["disciplina"]
+            if d not in ordem_disc:
+                ordem_disc.append(d)
+            ns = media([r["nota"] for r in rs])
+            tps = {r["tipo"] for r in rs}
+            modo = tps.pop() if len(tps) == 1 else "mista"
+            series.setdefault(k, []).append({"data": data, "nota": ns, "modo": modo})
+            por_topico.append({"disciplina": d, "topico": rs[0]["topico"], "nota": ns, "n": len(rs)})
+        sessoes.append({
+            "id": meta["id"], "data": data, "tema": meta.get("tema", ""), "modo": meta.get("modo", ""),
+            "duracao_min": duracao_minutos(regs), "n": len(regs), "nota": media([r["nota"] for r in regs]),
+            "obj_total": len(obj), "obj_acertos": sum(int(r["acertou"]) for r in obj),
+            "chutes": sum(1 for r in obj if r["acertou"] and r["certeza"] == "chute"),
+            "tipos_erro": tipos, "topicos": por_topico,
+        })
+    topicos = []
+    for k, t in estado["topicos"].items():
+        if t["disciplina"] not in ordem_disc:
+            ordem_disc.append(t["disciplina"])
+        topicos.append({
+            "disciplina": t["disciplina"], "topico": t["topico"], "nivel": t["nivel"], "tendencia": t["tendencia"],
+            "ultima": t["ultima"], "proxima": t["proxima"], "sessoes": t["sessoes"], "arquivado": t.get("arquivado", False),
+            "lacunas": [{"texto": l["texto"], "vezes": l.get("vezes", 1), "importancia": l.get("importancia", 1)}
+                        for l in t["lacunas_abertas"]],
+            "erros": t["erros_conceituais"], "cards": len(t["cards"]),
+            "serie": series.get(k, [{"data": h["data"], "nota": h["nota"], "modo": h["modo"]} for h in t["historico"]]),
+        })
+    return {"gerado_em": dt.datetime.now().isoformat(timespec="minutes"), "exemplo": False, "perfil": ler_perfil(),
+            "disciplinas": ordem_disc, "sessoes": sessoes, "topicos": topicos, "calibragem": calib}
+
+
+def dados_exemplo() -> dict:
+    """Histórico fictício (8 semanas) para demonstração. O conteúdo das lacunas é juridicamente correto."""
+    import random
+    rnd = random.Random(7)
+    base = {
+        "Direito Civil": {
+            "Usucapião": ["Usucapião familiar: 2 anos, imóvel urbano de até 250 m² e abandono do lar pelo ex-cônjuge (art. 1.240-A do CC)"],
+            "Prescrição e decadência": ["Prazo prescricional geral é de 10 anos (art. 205 do CC); reparação civil prescreve em 3 anos (art. 206, § 3º, V)"],
+            "Responsabilidade civil": ["Responsabilidade objetiva pela atividade de risco: art. 927, parágrafo único, do CC"],
+        },
+        "Processo Civil": {
+            "Tutela provisória": ["Tutela antecipada antecedente estabiliza se a decisão não for impugnada (art. 304 do CPC); revisão em 2 anos"],
+            "Honorários": ["Honorários contra a Fazenda Pública seguem as faixas percentuais do art. 85, § 3º, do CPC"],
+        },
+        "Direito Penal": {
+            "Dosimetria": ["Na 2ª fase, atenuantes não levam a pena abaixo do mínimo legal (Súmula 231 do STJ)"],
+            "Roubo": ["Roubo com emprego de arma branca: majorante do art. 157, § 2º, VII, do CP (Lei 13.964/2019)"],
+        },
+        "Processo Penal": {
+            "Prisão preventiva": ["Necessidade da preventiva revisada a cada 90 dias (art. 316, parágrafo único, do CPP)"],
+            "Nulidades": ["Não há nulidade sem demonstração de prejuízo (art. 563 do CPP)"],
+        },
+    }
+    erros = {"Prisão preventiva": "Prisão preventiva não tem prazo máximo fixado em lei",
+             "Dosimetria": "Maus antecedentes e reincidência não podem valorar o mesmo fato em fases distintas"}
+    hoje_d = dt.date.today()
+    inicio = hoje_d - dt.timedelta(days=55)
+    pares = [(d, t) for d in base for t in base[d]]
+    habilidade = {p: rnd.uniform(3.0, 6.0) for p in pares}
+    sessoes, series = [], {}
+    calib = {"certeza": {"n": 0, "acertos": 0}, "duvida": {"n": 0, "acertos": 0}, "chute": {"n": 0, "acertos": 0}}
+    dia = inicio
+    while dia <= hoje_d:
+        if rnd.random() < 0.62:
+            modo = rnd.choice(["discursiva", "discursiva", "objetiva"])
+            escolhidos = rnd.sample(pares, rnd.randint(2, 3))
+            por_topico, notas, tipos, obj_total, obj_acertos, chutes = [], [], {}, 0, 0, 0
+            for (d, t) in escolhidos:
+                habilidade[(d, t)] = min(9.6, habilidade[(d, t)] + rnd.uniform(0.1, 0.55))
+                n = rnd.randint(2, 4)
+                ns = round(max(0, min(10, habilidade[(d, t)] + rnd.uniform(-1.6, 1.2))) * 2) / 2
+                notas += [ns] * n
+                por_topico.append({"disciplina": d, "topico": t, "nota": ns, "n": n})
+                series.setdefault((d, t), []).append({"data": dia.isoformat(), "nota": ns, "modo": modo})
+                if modo == "objetiva":
+                    for _ in range(n):
+                        c = rnd.choices(["certeza", "duvida", "chute"], [5, 3, 1])[0]
+                        ok = rnd.random() < {"certeza": 0.86, "duvida": 0.55, "chute": 0.4}[c]
+                        calib[c]["n"] += 1; calib[c]["acertos"] += int(ok)
+                        obj_total += 1; obj_acertos += int(ok); chutes += int(ok and c == "chute")
+                        if not ok:
+                            te = rnd.choice(["conteudo", "conteudo", "leitura", "pegadinha"])
+                            tipos[te] = tipos.get(te, 0) + 1
+            tema = escolhidos[0][0]
+            sessoes.append({"id": f"{dia.isoformat()}_exemplo", "data": dia.isoformat(), "tema": tema, "modo": modo,
+                            "duracao_min": rnd.randint(22, 75), "n": len(notas), "nota": media(notas),
+                            "obj_total": obj_total, "obj_acertos": obj_acertos, "chutes": chutes,
+                            "tipos_erro": tipos, "topicos": por_topico})
+        dia += dt.timedelta(days=1)
+    topicos = []
+    for (d, t) in pares:
+        s = series.get((d, t), [])
+        if not s:
+            continue
+        nivel = s[0]["nota"]
+        for p in s[1:]:
+            nivel = round(0.6 * p["nota"] + 0.4 * nivel, 1)
+        ant = s[-2]["nota"] if len(s) > 1 else None
+        ultima = s[-1]["data"]
+        prox = somar_dias(ultima, dias_ate_proxima(s[-1]["nota"], [{"nota": x["nota"]} for x in s]))
+        abertas = [] if nivel >= 8.5 else [{"texto": x, "vezes": rnd.randint(1, 3), "importancia": rnd.choice([2, 3])} for x in base[d][t]]
+        topicos.append({"disciplina": d, "topico": t, "nivel": nivel, "tendencia": tendencia(s[-1]["nota"], ant),
+                        "ultima": ultima, "proxima": prox, "sessoes": len(s), "arquivado": False, "lacunas": abertas,
+                        "erros": [{"texto": erros[t], "data": s[0]["data"]}] if t in erros else [],
+                        "cards": rnd.randint(0, 4), "serie": s})
+    return {"gerado_em": dt.datetime.now().isoformat(timespec="minutes"), "exemplo": True,
+            "perfil": {"cargo": "Juiz de Direito Substituto", "orgao": "Tribunal de Justiça", "banca": "FGV",
+                       "fase": "2ª fase", "data_prova": (hoje_d + dt.timedelta(days=47)).isoformat()},
+            "disciplinas": list(base), "sessoes": sessoes, "topicos": topicos, "calibragem": calib}
+
+
+def exportar(exemplo: bool = False) -> Path:
+    DASHBOARD.mkdir(parents=True, exist_ok=True)
+    dados = dados_exemplo() if exemplo else montar_dados()
+    destino = DASHBOARD / ("dados.exemplo.js" if exemplo else "dados.js")
+    var = "DADOS_EXEMPLO" if exemplo else "DADOS"
+    destino.write_text(f"window.{var} = {json.dumps(dados, ensure_ascii=False)};\n", encoding="utf-8")
+    return destino
+
+
+def cmd_exportar(args) -> None:
+    destino = exportar(args.exemplo)
+    print(f"dados do dashboard: {destino.relative_to(RAIZ).as_posix()} ({destino.stat().st_size // 1024 + 1} KB)")
 
 
 def cmd_topico(args) -> None:
@@ -588,6 +767,9 @@ def main() -> None:
         p = sub.add_parser(nome)
         p.add_argument("sessao")
         p.set_defaults(f=f)
+    p = sub.add_parser("exportar")
+    p.add_argument("--exemplo", action="store_true", help="gera dashboard/dados.exemplo.js com histórico fictício")
+    p.set_defaults(f=cmd_exportar)
     p = sub.add_parser("topico")
     p.add_argument("disciplina")
     p.add_argument("topico")

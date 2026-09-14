@@ -19,3 +19,6 @@ venv/
 .DS_Store
 Thumbs.db
 .claude/settings.local.json
+
+# Dashboard: dados reais gerados localmente
+dashboard/dados.js

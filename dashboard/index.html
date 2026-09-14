@@ -1,0 +1,683 @@
+<title>Revisão em Voz Alta</title>
+<meta name="description" content="Painel de desempenho das sessões de revisão: evolução por disciplina, constância, pauta de revisões e lacunas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap">
+<style>
+:root {
+  color-scheme: light;
+  --ground: #f4f6f4;
+  --surface: #fcfdfc;
+  --surface-2: #eef2ef;
+  --ink: #16211f;
+  --ink-2: #4a5754;
+  --muted: #7d8985;
+  --line: #d9dfdb;
+  --line-strong: #bfc8c3;
+  --accent: #0f5c5e;
+  --accent-soft: #dcebea;
+  --brass: #9a7432;
+  --good: #1d7a3e; --good-bg: #e2f1e6;
+  --warn: #9a6400; --warn-bg: #fbefd6;
+  --crit: #b83232; --crit-bg: #f8e3e1;
+  --heat-0: #e6ebe8; --heat-1: #bcd9d6; --heat-2: #7fb7b3; --heat-3: #3b8c89; --heat-4: #0f5c5e;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948;
+  --shadow: 0 1px 2px rgba(22,33,31,.06), 0 4px 16px rgba(22,33,31,.05);
+  --display: "Literata", Georgia, "Times New Roman", serif;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #101514; --surface: #172020; --surface-2: #1d2827;
+    --ink: #e7ecea; --ink-2: #b3bfbb; --muted: #83918c; --line: #2a3533; --line-strong: #3a4845;
+    --accent: #5bb5af; --accent-soft: #1f3836; --brass: #d0a45a;
+    --good: #4cc27a; --good-bg: #183324; --warn: #e6b04a; --warn-bg: #3a2e14; --crit: #ef7b73; --crit-bg: #3d1f1d;
+    --heat-0: #202b2a; --heat-1: #1f4a48; --heat-2: #2b6d6a; --heat-3: #3f9591; --heat-4: #6cc7c1;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #101514; --surface: #172020; --surface-2: #1d2827;
+  --ink: #e7ecea; --ink-2: #b3bfbb; --muted: #83918c; --line: #2a3533; --line-strong: #3a4845;
+  --accent: #5bb5af; --accent-soft: #1f3836; --brass: #d0a45a;
+  --good: #4cc27a; --good-bg: #183324; --warn: #e6b04a; --warn-bg: #3a2e14; --crit: #ef7b73; --crit-bg: #3d1f1d;
+  --heat-0: #202b2a; --heat-1: #1f4a48; --heat-2: #2b6d6a; --heat-3: #3f9591; --heat-4: #6cc7c1;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ground); color: var(--ink); font: 14px/1.5 var(--sans); padding-inline: 16px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 20px 48px; display: grid; gap: 20px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--mono); }
+.eyebrow { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+/* ---------- cabeçalho ---------- */
+header.top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.brand h1 { font-family: var(--display); font-weight: 600; font-size: 30px; line-height: 1.1; letter-spacing: -.01em; }
+.brand p { margin: 6px 0 0; color: var(--ink-2); }
+.badge-exemplo { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; background: var(--warn-bg); color: var(--warn); font: 600 11px/1.6 var(--sans); letter-spacing: .04em; text-transform: uppercase; vertical-align: middle; }
+.prova { display: flex; align-items: baseline; gap: 10px; }
+.prova .dias { font-family: var(--display); font-size: 40px; line-height: 1; color: var(--brass); font-weight: 600; }
+.prova .rot { color: var(--ink-2); line-height: 1.3; }
+.prova .rot small { display: block; color: var(--muted); font-size: 12px; }
+
+nav.abas { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--line); margin-top: -8px; }
+nav.abas::-webkit-scrollbar { display: none; }
+nav.abas button { background: none; border: 0; padding: 10px 14px; color: var(--ink-2); font-weight: 500; border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; }
+nav.abas button:hover { color: var(--ink); }
+nav.abas button[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+nav.abas .cont { margin-left: 6px; padding: 0 6px; border-radius: 999px; background: var(--crit-bg); color: var(--crit); font-size: 11px; font-weight: 600; }
+
+/* ---------- blocos ---------- */
+.painel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; min-width: 0; }
+.painel > header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; margin-bottom: 14px; }
+.painel h2 { font-family: var(--display); font-size: 18px; font-weight: 600; }
+.painel .sub { color: var(--muted); font-size: 12.5px; }
+.grade-2 { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 20px; }
+@media (max-width: 860px) { .grade-2 { grid-template-columns: minmax(0, 1fr); } }
+
+/* indicadores */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+.kpi { padding: 14px 18px; border-right: 1px solid var(--line); display: grid; gap: 2px; align-content: start; }
+.kpi:last-child { border-right: 0; }
+.kpi .v { font-family: var(--display); font-size: 28px; font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.kpi .v small { font: 500 13px var(--sans); color: var(--ink-2); margin-left: 2px; }
+.kpi .d { font-size: 12px; color: var(--muted); }
+.delta-up { color: var(--good); } .delta-down { color: var(--crit); }
+
+/* segmentado */
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 8px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.seg button { border: 0; background: none; padding: 5px 11px; border-radius: 6px; cursor: pointer; color: var(--ink-2); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.seg .n { font-size: 11px; color: var(--muted); }
+
+/* status */
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 1px 8px 1px 6px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.chip svg { width: 10px; height: 10px; flex: none; }
+.chip.good { background: var(--good-bg); color: var(--good); }
+.chip.warn { background: var(--warn-bg); color: var(--warn); }
+.chip.crit { background: var(--crit-bg); color: var(--crit); }
+.chip.neutro { background: var(--surface-2); color: var(--ink-2); }
+.dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+
+/* disciplinas */
+.discs { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.disc { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; cursor: pointer; display: grid; gap: 10px; transition: border-color .15s, transform .15s; }
+.disc:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+.disc .l1 { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.disc .l2 { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.disc .nivel { font-family: var(--display); font-size: 30px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+.disc .nivel small { font: 500 13px var(--sans); color: var(--muted); }
+.barra { height: 6px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+.barra i { display: block; height: 100%; border-radius: 3px; }
+.disc .l3 { font-size: 12.5px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+
+/* gráficos */
+.chart { width: 100%; position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { fill: var(--muted); font: 11px var(--sans); }
+.legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); margin-top: 8px; align-items: center; }
+.legenda span { display: inline-flex; align-items: center; gap: 6px; }
+.heat-escala { display: inline-flex; gap: 3px; vertical-align: middle; }
+.heat-escala i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--ink); color: var(--ground); padding: 6px 9px; border-radius: 6px; font-size: 12px; line-height: 1.4; max-width: 260px; box-shadow: var(--shadow); }
+#tip b { font-weight: 600; }
+
+/* tabelas */
+.tabela-wrap { overflow-x: auto; margin-inline: -4px; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line-strong); white-space: nowrap; }
+td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tr.linha { cursor: pointer; }
+tr.linha:hover td { background: var(--surface-2); }
+td.r, th.r { text-align: right; }
+.expand-btn { background: none; border: 0; padding: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; text-align: left; }
+.expand-btn .seta { color: var(--muted); transition: transform .15s; display: inline-block; width: 10px; }
+.expand-btn[aria-expanded="true"] .seta { transform: rotate(90deg); }
+tr.detalhe td { background: var(--surface-2); padding: 12px 16px 16px 34px; }
+.detalhe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.detalhe-grid h3 { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+.detalhe-grid ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.lacuna-chave { color: var(--ink-2); max-width: 380px; }
+
+/* pauta */
+.pauta { display: grid; gap: 0; }
+.pauta-item { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 12px 4px; border-bottom: 1px solid var(--line); }
+.pauta-item:last-child { border-bottom: 0; }
+.pauta-data { text-align: center; border-right: 1px solid var(--line); padding-right: 12px; }
+.pauta-data b { display: block; font-family: var(--display); font-size: 24px; line-height: 1; font-weight: 600; font-variant-numeric: tabular-nums; }
+.pauta-data span { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.pauta-corpo { display: grid; gap: 3px; min-width: 0; }
+.pauta-corpo .t { font-weight: 600; }
+.pauta-corpo .m { font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+.pauta-corpo .lac { font-size: 13px; color: var(--ink-2); }
+.pauta-lado { display: grid; justify-items: end; gap: 4px; }
+@media (max-width: 520px) { .pauta-item { grid-template-columns: 52px minmax(0, 1fr); } .pauta-lado { grid-column: 2; justify-items: start; } }
+
+/* lacunas */
+.ranking { list-style: none; margin: 0; padding: 0; display: grid; }
+.ranking li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.ranking li:last-child { border-bottom: 0; }
+.ranking .peso { font-family: var(--mono); font-size: 12px; color: var(--muted); min-width: 34px; padding-top: 2px; }
+.ranking .txt { display: grid; gap: 3px; }
+.ranking .meta { font-size: 12px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.imp { display: inline-flex; gap: 2px; }
+.imp i { width: 6px; height: 6px; border-radius: 50%; background: var(--line-strong); display: inline-block; }
+.imp i.on { background: var(--brass); }
+.hbar { display: grid; grid-template-columns: 110px minmax(0, 1fr) 64px; gap: 10px; align-items: center; padding: 6px 0; font-size: 13px; }
+.hbar .trilho { height: 10px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+.hbar .trilho i { display: block; height: 100%; background: var(--accent); border-radius: 0 4px 4px 0; }
+.hbar .valor { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.nota-rodape { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+.vazio { padding: 28px 12px; text-align: center; color: var(--muted); }
+.vazio b { display: block; color: var(--ink-2); font-weight: 600; margin-bottom: 4px; }
+footer.pe { color: var(--muted); font-size: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); padding-top: 14px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Revisão em Voz Alta <span id="selo"></span></h1>
+      <p id="perfil">Painel de desempenho</p>
+    </div>
+    <div class="prova" id="prova"></div>
+  </header>
+
+  <nav class="abas" role="tablist" aria-label="Seções do painel">
+    <button role="tab" id="aba-geral" data-aba="geral" aria-selected="true">Visão geral</button>
+    <button role="tab" id="aba-disciplinas" data-aba="disciplinas" aria-selected="false">Disciplinas</button>
+    <button role="tab" id="aba-pauta" data-aba="pauta" aria-selected="false">Pauta de revisões</button>
+    <button role="tab" id="aba-historico" data-aba="historico" aria-selected="false">Histórico</button>
+    <button role="tab" id="aba-lacunas" data-aba="lacunas" aria-selected="false">Lacunas e erros</button>
+  </nav>
+
+  <main id="conteudo"></main>
+
+  <footer class="pe">
+    <span id="atualizado"></span>
+    <span>Nível 0–10 · nota da sessão pesa 60% e o nível anterior 40%</span>
+  </footer>
+</div>
+<div id="tip" hidden></div>
+
+<script src="dados.exemplo.js"></script>
+<script src="dados.js"></script>
+<script>
+(function () {
+  "use strict";
+  const BRUTO = window.DADOS || window.DADOS_EXEMPLO;
+  const $ = (s, el = document) => el.querySelector(s);
+  const main = $("#conteudo");
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+  const DIAS_SEM = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+
+  if (!BRUTO) {
+    main.innerHTML = `<div class="painel vazio"><b>Nenhum dado encontrado</b>Rode <code>python scripts/sessao.py exportar</code> depois de consolidar uma sessão.</div>`;
+    return;
+  }
+
+  // ---------- datas ----------
+  const hojeD = new Date(); hojeD.setHours(0, 0, 0, 0);
+  const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const parse = s => { const [y, m, d] = s.slice(0, 10).split("-").map(Number); return new Date(y, m - 1, d); };
+  const addDias = (s, n) => { const d = parse(s); d.setDate(d.getDate() + n); return iso(d); };
+  const difDias = (a, b) => Math.round((parse(b) - parse(a)) / 86400000);
+  const HOJE = iso(hojeD);
+  const fmtData = s => { const d = parse(s); return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`; };
+  const fmtNum = (n, c = 1) => n == null || isNaN(n) ? "—" : Number(n).toLocaleString("pt-BR", { minimumFractionDigits: c, maximumFractionDigits: c });
+  const fmtHoras = min => { const h = Math.floor(min / 60), m = Math.round(min % 60); return h ? `${h}h${m ? String(m).padStart(2, "0") : ""}` : `${m}min`; };
+
+  // Dados de exemplo são deslocados para terminar hoje, para a demonstração nunca envelhecer.
+  const D = JSON.parse(JSON.stringify(BRUTO));
+  if (D.exemplo) {
+    const off = difDias(D.gerado_em.slice(0, 10), HOJE);
+    const mv = s => s ? addDias(s, off) : s;
+    D.sessoes.forEach(s => { s.data = mv(s.data); });
+    D.topicos.forEach(t => { t.ultima = mv(t.ultima); t.proxima = mv(t.proxima); t.serie.forEach(p => p.data = mv(p.data)); t.erros.forEach(e => e.data = mv(e.data)); });
+    if (D.perfil.data_prova) D.perfil.data_prova = mv(D.perfil.data_prova);
+  }
+
+  // ---------- cores e status ----------
+  const corDisc = nome => { const i = D.disciplinas.indexOf(nome); return i >= 0 && i < 8 ? `var(--s${i + 1})` : "var(--muted)"; };
+  const ICONES = {
+    good: '<svg viewBox="0 0 10 10"><circle cx="5" cy="5" r="4.5" fill="currentColor"/></svg>',
+    warn: '<svg viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M5 1a4 4 0 0 1 0 8z" fill="currentColor"/></svg>',
+    crit: '<svg viewBox="0 0 10 10"><circle cx="5" cy="5" r="3.8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>',
+  };
+  const statusNivel = n => n >= 7 ? ["good", "Firme"] : n >= 5 ? ["warn", "Em construção"] : ["crit", "Frágil"];
+  const chipNivel = n => { const [c, r] = statusNivel(n); return `<span class="chip ${c}">${ICONES[c]}${r}</span>`; };
+  const setaTend = t => t === "↑" ? `<span class="delta-up" title="subiu">▲</span>` : t === "↓" ? `<span class="delta-down" title="caiu">▼</span>` : t === "=" ? `<span title="estável" style="color:var(--muted)">=</span>` : `<span title="primeira avaliação" style="color:var(--muted)">novo</span>`;
+  const media = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+
+  // ---------- derivados ----------
+  const sessoes = [...D.sessoes].sort((a, b) => a.data.localeCompare(b.data));
+  const topicos = D.topicos.filter(t => !t.arquivado);
+  const atrasadas = topicos.filter(t => t.proxima < HOJE);
+
+  // ---------- tooltip ----------
+  const tip = $("#tip");
+  function mostrarTip(ev, html) {
+    tip.innerHTML = html; tip.hidden = false;
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = ev.clientX + 14, y = ev.clientY - h - 10;
+    if (x + w > innerWidth - 8) x = ev.clientX - w - 14;
+    if (y < 8) y = ev.clientY + 16;
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+  }
+  const esconderTip = () => { tip.hidden = true; };
+  function ligarTips(root) {
+    root.querySelectorAll("[data-tip]").forEach(el => {
+      el.addEventListener("mousemove", e => mostrarTip(e, el.getAttribute("data-tip")));
+      el.addEventListener("mouseleave", esconderTip);
+    });
+  }
+
+  // ---------- cabeçalho ----------
+  const p = D.perfil || {};
+  $("#perfil").textContent = [p.cargo, p.orgao, p.banca, p.fase].filter(Boolean).join(" · ") || "Painel de desempenho";
+  if (D.exemplo) $("#selo").innerHTML = `<span class="badge-exemplo">dados de exemplo</span>`;
+  if (p.data_prova) {
+    const n = difDias(HOJE, p.data_prova);
+    $("#prova").innerHTML = n >= 0
+      ? `<span class="dias num">${n}</span><span class="rot">${n === 1 ? "dia" : "dias"} para a prova<small>${fmtData(p.data_prova)}/${p.data_prova.slice(0, 4)}</small></span>`
+      : `<span class="rot">Prova realizada em ${fmtData(p.data_prova)}</span>`;
+  }
+  const g = new Date(D.gerado_em);
+  $("#atualizado").textContent = `Dados atualizados em ${g.toLocaleDateString("pt-BR")} às ${g.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}` + (D.exemplo ? " · histórico fictício para demonstração" : "");
+  if (atrasadas.length) $("#aba-pauta").insertAdjacentHTML("beforeend", `<span class="cont num">${atrasadas.length}</span>`);
+
+  const vazio = (t, s) => `<div class="vazio"><b>${t}</b>${s}</div>`;
+
+  // =====================================================================
+  // VISÃO GERAL
+  // =====================================================================
+  function kpis() {
+    const soma = (arr, f) => arr.reduce((a, s) => a + f(s), 0);
+    const ult7 = sessoes.filter(s => difDias(s.data, HOJE) < 7);
+    const ult30 = sessoes.filter(s => difDias(s.data, HOJE) < 30);
+    const ant30 = sessoes.filter(s => { const d = difDias(s.data, HOJE); return d >= 30 && d < 60; });
+    const mediaPond = arr => { const n = soma(arr, s => s.n); return n ? soma(arr, s => s.nota * s.n) / n : null; };
+    const m30 = mediaPond(ult30), ma = mediaPond(ant30);
+    const delta = m30 != null && ma != null ? m30 - ma : null;
+    const dias = new Set(sessoes.map(s => s.data));
+    let seq = 0, cur = dias.has(HOJE) ? HOJE : addDias(HOJE, -1);
+    while (dias.has(cur)) { seq++; cur = addDias(cur, -1); }
+    const deltaHtml = delta == null ? "sem base nos 30 dias anteriores" : `<span class="${delta >= 0 ? "delta-up" : "delta-down"}">${delta >= 0 ? "▲" : "▼"} ${fmtNum(Math.abs(delta))}</span> vs. 30 dias anteriores`;
+    return `<section class="kpis" aria-label="Indicadores">
+      <div class="kpi"><span class="eyebrow">Últimos 7 dias</span><span class="v">${fmtHoras(soma(ult7, s => s.duracao_min))}</span><span class="d">${ult7.length} ${ult7.length === 1 ? "sessão" : "sessões"}</span></div>
+      <div class="kpi"><span class="eyebrow">Tempo total</span><span class="v">${fmtHoras(soma(sessoes, s => s.duracao_min))}</span><span class="d">${sessoes.length} sessões</span></div>
+      <div class="kpi"><span class="eyebrow">Perguntas</span><span class="v">${soma(sessoes, s => s.n)}</span><span class="d">${soma(sessoes, s => s.obj_total)} objetivas</span></div>
+      <div class="kpi"><span class="eyebrow">Nota média · 30 dias</span><span class="v">${fmtNum(m30)}<small>/10</small></span><span class="d">${deltaHtml}</span></div>
+      <div class="kpi"><span class="eyebrow">Revisões atrasadas</span><span class="v">${atrasadas.length}</span><span class="d">${atrasadas.length ? `<span class="chip crit">${ICONES.crit}em atraso</span>` : `<span class="chip good">${ICONES.good}em dia</span>`}</span></div>
+      <div class="kpi"><span class="eyebrow">Sequência</span><span class="v">${seq}<small>${seq === 1 ? "dia" : "dias"}</small></span><span class="d">${dias.size} dias com estudo</span></div>
+    </section>`;
+  }
+
+  function heatmap() {
+    const minutos = {}, perguntas = {};
+    sessoes.forEach(s => { minutos[s.data] = (minutos[s.data] || 0) + s.duracao_min; perguntas[s.data] = (perguntas[s.data] || 0) + s.n; });
+    const semanas = 26, cel = 13, gap = 3, esq = 26, topo = 16;
+    const fimSemana = addDias(HOJE, 6 - hojeD.getDay());
+    const inicio = addDias(fimSemana, -(semanas * 7 - 1));
+    const nivel = m => !m ? 0 : m < 20 ? 1 : m < 40 ? 2 : m < 60 ? 3 : 4;
+    let cells = "", meses = "", mesAnt = -1;
+    for (let w = 0; w < semanas; w++) {
+      const x = esq + w * (cel + gap);
+      const d0 = parse(addDias(inicio, w * 7));
+      if (d0.getMonth() !== mesAnt) { meses += `<text x="${x}" y="10">${MESES[d0.getMonth()]}</text>`; mesAnt = d0.getMonth(); }
+      for (let k = 0; k < 7; k++) {
+        const ds = addDias(inicio, w * 7 + k);
+        if (ds > HOJE) continue;
+        const m = minutos[ds] || 0;
+        const t = m ? `<b>${fmtData(ds)}</b> · ${fmtHoras(m)} · ${perguntas[ds]} perguntas` : `<b>${fmtData(ds)}</b> · sem estudo`;
+        cells += `<rect x="${x}" y="${topo + k * (cel + gap)}" width="${cel}" height="${cel}" rx="2.5" fill="var(--heat-${nivel(m)})"${ds === HOJE ? ' stroke="var(--ink)" stroke-width="1.2"' : ""} data-tip="${esc(t)}"></rect>`;
+      }
+    }
+    const rotDias = [1, 3, 5].map(k => `<text x="0" y="${topo + k * (cel + gap) + 10}">${DIAS_SEM[k]}</text>`).join("");
+    const W = esq + semanas * (cel + gap), H = topo + 7 * (cel + gap);
+    return `<div class="chart" style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" style="min-width:${Math.min(W, 420)}px;max-width:${W * 1.6}px" role="img" aria-label="Calendário de constância das últimas 26 semanas">${meses}${rotDias}${cells}</svg></div>
+      <div class="legenda"><span>menos</span><span class="heat-escala">${[0, 1, 2, 3, 4].map(i => `<i style="background:var(--heat-${i})"></i>`).join("")}</span><span>mais</span><span style="color:var(--muted)">· &lt;20, 20–40, 40–60, 60+ min por dia</span></div>`;
+  }
+
+  let modoSemanal = "tempo";
+  function semanal() {
+    const semanas = 8;
+    const inicioSem = addDias(HOJE, -hojeD.getDay());
+    const dados = [];
+    for (let i = semanas - 1; i >= 0; i--) {
+      const ini = addDias(inicioSem, -7 * i), fim = addDias(ini, 6);
+      const ss = sessoes.filter(s => s.data >= ini && s.data <= fim);
+      dados.push({ ini, fim, tempo: ss.reduce((a, s) => a + s.duracao_min, 0), perguntas: ss.reduce((a, s) => a + s.n, 0), n: ss.length });
+    }
+    const chave = modoSemanal;
+    const max = Math.max(1, ...dados.map(d => d[chave]));
+    const passo = chave === "tempo" ? (max > 600 ? 180 : max > 240 ? 120 : 60) : (max > 60 ? 20 : max > 20 ? 10 : 5);
+    const topoEscala = Math.ceil(max / passo) * passo;
+    const W = 520, H = 210, esq = 42, dir = 8, topo = 10, base = 180;
+    const larg = (W - esq - dir) / semanas, bw = Math.min(34, larg * 0.56);
+    const y = v => base - (v / topoEscala) * (base - topo);
+    let grid = "";
+    for (let v = 0; v <= topoEscala; v += passo) {
+      grid += `<line x1="${esq}" x2="${W - dir}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"${v === 0 ? ' stroke="var(--line-strong)"' : ""}></line>`;
+      grid += `<text x="${esq - 8}" y="${y(v) + 4}" text-anchor="end">${chave === "tempo" ? (v / 60) + "h" : v}</text>`;
+    }
+    let barras = "";
+    dados.forEach((d, i) => {
+      const cx = esq + larg * i + larg / 2, v = d[chave], yy = y(v), h = base - yy;
+      const atual = i === semanas - 1;
+      if (v > 0) {
+        const r = Math.min(4, h);
+        barras += `<path d="M${cx - bw / 2},${base} V${yy + r} Q${cx - bw / 2},${yy} ${cx - bw / 2 + r},${yy} H${cx + bw / 2 - r} Q${cx + bw / 2},${yy} ${cx + bw / 2},${yy + r} V${base} Z" fill="var(--accent)" opacity="${atual ? 1 : 0.72}"></path>`;
+      }
+      const tt = `<b>${fmtData(d.ini)} a ${fmtData(d.fim)}</b><br>${fmtHoras(d.tempo)} · ${d.perguntas} perguntas · ${d.n} sessões`;
+      barras += `<rect x="${cx - larg / 2}" y="${topo}" width="${larg}" height="${base - topo}" fill="transparent" data-tip="${esc(tt)}"></rect>`;
+      barras += `<text x="${cx}" y="${base + 16}" text-anchor="middle"${atual ? ' style="fill:var(--ink);font-weight:600"' : ""}>${atual ? "esta" : fmtData(d.ini)}</text>`;
+    });
+    return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Estudo semanal das últimas 8 semanas">${grid}${barras}</svg></div>
+      <p class="nota-rodape">Semanas de domingo a sábado. A barra mais escura é a semana atual.</p>`;
+  }
+
+  function nivelDisc(nome) {
+    const ts = topicos.filter(t => t.disciplina === nome);
+    return { ts, nivel: media(ts.map(t => t.nivel)), lacunas: ts.reduce((a, t) => a + t.lacunas.length, 0) };
+  }
+  function tendDisc(nome) {
+    const pts = D.topicos.filter(t => t.disciplina === nome).flatMap(t => t.serie);
+    const rec = pts.filter(q => difDias(q.data, HOJE) < 14).map(q => q.nota);
+    const ant = pts.filter(q => { const d = difDias(q.data, HOJE); return d >= 14 && d < 28; }).map(q => q.nota);
+    if (!rec.length || !ant.length) return null;
+    return media(rec) - media(ant);
+  }
+
+  function cartoesDisciplinas() {
+    if (!D.disciplinas.length) return vazio("Nenhuma disciplina ainda", "Elas aparecem aqui depois da primeira sessão consolidada.");
+    return `<div class="discs">${D.disciplinas.map(nome => {
+      const { ts, nivel, lacunas } = nivelDisc(nome);
+      if (!ts.length) return "";
+      const td = tendDisc(nome);
+      const tdHtml = td == null ? `<span style="color:var(--muted)">sem comparação</span>` : `<span class="${td >= 0 ? "delta-up" : "delta-down"}">${td >= 0 ? "▲" : "▼"} ${fmtNum(Math.abs(td))} em 14 dias</span>`;
+      return `<button class="disc" data-ir-disc="${esc(nome)}" aria-label="Abrir ${esc(nome)}">
+        <span class="l1"><span class="dot" style="background:${corDisc(nome)}"></span>${esc(nome)}</span>
+        <span class="l2"><span class="nivel">${fmtNum(nivel)}<small> /10</small></span>${chipNivel(nivel)}</span>
+        <span class="barra"><i style="width:${(nivel || 0) * 10}%;background:${corDisc(nome)}"></i></span>
+        <span class="l3"><span>${ts.length} ${ts.length === 1 ? "tópico" : "tópicos"} · ${lacunas} ${lacunas === 1 ? "lacuna" : "lacunas"}</span>${tdHtml}</span>
+      </button>`;
+    }).join("")}</div>`;
+  }
+
+  function vistaGeral() {
+    if (!sessoes.length) {
+      return kpis() + `<div class="painel" style="margin-top:20px">${vazio("Sem sessões consolidadas", "Faça uma sessão de revisão e encerre para ver o painel ganhar vida.")}</div>`;
+    }
+    return `<div style="display:grid;gap:20px">
+      ${kpis()}
+      <div class="grade-2">
+        <section class="painel"><header><h2>Constância</h2><span class="sub">minutos por dia · 26 semanas</span></header>${heatmap()}</section>
+        <section class="painel"><header><h2>Estudo semanal</h2>
+          <div class="seg" role="group" aria-label="Medida do gráfico semanal">
+            <button id="sem-tempo" data-sem="tempo" aria-pressed="${modoSemanal === "tempo"}">Tempo</button>
+            <button id="sem-perguntas" data-sem="perguntas" aria-pressed="${modoSemanal === "perguntas"}">Perguntas</button>
+          </div></header><div id="semanal">${semanal()}</div></section>
+      </div>
+      <section><header style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;gap:12px;flex-wrap:wrap"><h2 style="font-family:var(--display);font-size:18px">Disciplinas</h2><span class="sub" style="color:var(--muted);font-size:12.5px">nível médio dos tópicos ativos · clique para abrir</span></header>
+        ${cartoesDisciplinas()}</section>
+    </div>`;
+  }
+
+  // =====================================================================
+  // DISCIPLINAS
+  // =====================================================================
+  let discSel = null;
+  const abertos = new Set();
+
+  function linhaEvolucao(nome) {
+    const pts = D.topicos.filter(t => t.disciplina === nome).flatMap(t => t.serie);
+    if (!pts.length) return vazio("Sem histórico", "Esta disciplina ainda não tem sessões consolidadas.");
+    const porModo = { discursiva: {}, objetiva: {} };
+    pts.forEach(q => { const m = q.modo === "objetiva" ? "objetiva" : "discursiva"; (porModo[m][q.data] ||= []).push(q.nota); });
+    const series = Object.entries(porModo).map(([modo, obj]) => ({ modo, pts: Object.keys(obj).sort().map(d => ({ data: d, nota: media(obj[d]) })) })).filter(s => s.pts.length);
+    const datas = pts.map(q => q.data).sort();
+    let d0 = datas[0], d1 = datas[datas.length - 1];
+    if (d0 === d1) { d0 = addDias(d0, -3); d1 = addDias(d1, 3); }
+    const span = Math.max(1, difDias(d0, d1));
+    const W = 720, H = 240, esq = 34, dir = 20, topo = 12, base = 206;
+    const x = d => esq + (difDias(d0, d) / span) * (W - esq - dir);
+    const y = v => base - (v / 10) * (base - topo);
+    const cor = corDisc(nome);
+    let svg = "";
+    [0, 2, 4, 6, 8, 10].forEach(v => {
+      svg += `<line x1="${esq}" x2="${W - dir}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? "var(--line-strong)" : "var(--line)"}" stroke-width="1"></line><text x="${esq - 8}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
+    });
+    svg += `<rect x="${esq}" y="${y(7)}" width="${W - esq - dir}" height="${y(5) - y(7)}" fill="var(--warn-bg)" opacity=".45"></rect>`;
+    const nTicks = Math.min(6, span + 1);
+    for (let i = 0; i < nTicks; i++) {
+      const d = addDias(d0, Math.round((span * i) / Math.max(1, nTicks - 1)));
+      svg += `<text x="${x(d)}" y="${base + 18}" text-anchor="${i === 0 ? "start" : i === nTicks - 1 ? "end" : "middle"}">${fmtData(d)}</text>`;
+    }
+    series.forEach(s => {
+      const tracejado = s.modo === "objetiva";
+      const caminho = s.pts.map((q, i) => `${i ? "L" : "M"}${x(q.data).toFixed(1)},${y(q.nota).toFixed(1)}`).join(" ");
+      if (!tracejado && s.pts.length > 1) {
+        svg += `<path d="${caminho} L${x(s.pts[s.pts.length - 1].data).toFixed(1)},${base} L${x(s.pts[0].data).toFixed(1)},${base} Z" fill="${cor}" opacity=".08"></path>`;
+      }
+      svg += `<path d="${caminho}" fill="none" stroke="${cor}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"${tracejado ? ' stroke-dasharray="5 4"' : ""}></path>`;
+      s.pts.forEach((q, i) => {
+        const ult = i === s.pts.length - 1;
+        svg += `<circle cx="${x(q.data)}" cy="${y(q.nota)}" r="${ult ? 5 : 3.5}" fill="${tracejado ? "var(--surface)" : cor}" stroke="${tracejado ? cor : "var(--surface)"}" stroke-width="2"></circle>`;
+      });
+      const u = s.pts[s.pts.length - 1];
+      svg += `<text x="${Math.min(x(u.data) + 8, W - dir)}" y="${tracejado ? y(u.nota) + 20 : y(u.nota) - 9}" text-anchor="${x(u.data) > W - 90 ? "end" : "start"}" style="fill:var(--ink);font-weight:600">${fmtNum(u.nota)}</text>`;
+    });
+    // camada de hover: coluna por data
+    const todas = [...new Set(series.flatMap(s => s.pts.map(q => q.data)))].sort();
+    todas.forEach((d, i) => {
+      const xa = i ? (x(todas[i - 1]) + x(d)) / 2 : esq, xb = i < todas.length - 1 ? (x(d) + x(todas[i + 1])) / 2 : W - dir;
+      const linhas = series.map(s => { const q = s.pts.find(k => k.data === d); return q ? `${s.modo === "objetiva" ? "Objetiva" : "Discursiva"}: <b>${fmtNum(q.nota)}</b>` : ""; }).filter(Boolean).join("<br>");
+      svg += `<rect x="${xa}" y="${topo}" width="${Math.max(1, xb - xa)}" height="${base - topo}" fill="transparent" data-tip="${esc(`<b>${fmtData(d)}</b><br>${linhas}`)}"></rect>`;
+    });
+    const leg = series.map(s => s.modo === "objetiva"
+      ? `<span><svg width="26" height="10"><line x1="0" x2="26" y1="5" y2="5" stroke="${cor}" stroke-width="2" stroke-dasharray="5 4"/><circle cx="13" cy="5" r="3.5" fill="var(--surface)" stroke="${cor}" stroke-width="2"/></svg>Objetiva</span>`
+      : `<span><svg width="26" height="10"><line x1="0" x2="26" y1="5" y2="5" stroke="${cor}" stroke-width="2"/><circle cx="13" cy="5" r="3.5" fill="${cor}"/></svg>Discursiva</span>`).join("");
+    return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolução das notas em ${esc(nome)}">${svg}</svg></div>
+      <div class="legenda">${leg}<span style="color:var(--muted)"><i class="heat-escala"><i style="background:var(--warn-bg)"></i></i> faixa 5–7 (em construção)</span></div>`;
+  }
+
+  function sparkline(serie) {
+    if (!serie.length) return "";
+    const W = 92, H = 26, pad = 3;
+    const pts = serie.slice(-8);
+    const x = i => pts.length === 1 ? W / 2 : pad + (i / (pts.length - 1)) * (W - pad * 2);
+    const y = v => H - pad - (v / 10) * (H - pad * 2);
+    const d = pts.map((q, i) => `${i ? "L" : "M"}${x(i).toFixed(1)},${y(q.nota).toFixed(1)}`).join(" ");
+    const u = pts[pts.length - 1];
+    return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Últimas notas: ${pts.map(q => fmtNum(q.nota)).join(", ")}"><line x1="0" x2="${W}" y1="${y(7)}" y2="${y(7)}" stroke="var(--line)" stroke-dasharray="2 2"/><path d="${d}" fill="none" stroke="var(--ink-2)" stroke-width="1.5" stroke-linejoin="round"/><circle cx="${x(pts.length - 1)}" cy="${y(u.nota)}" r="3" fill="var(--accent)"/></svg>`;
+  }
+
+  function chipProxima(data) {
+    const d = difDias(HOJE, data);
+    if (d < 0) return `<span class="chip crit">${ICONES.crit}há ${-d} ${d === -1 ? "dia" : "dias"}</span>`;
+    if (d === 0) return `<span class="chip warn">${ICONES.warn}hoje</span>`;
+    return `<span class="num">${fmtData(data)}</span>`;
+  }
+
+  function vistaDisciplinas() {
+    const ativas = D.disciplinas.filter(n => topicos.some(t => t.disciplina === n));
+    if (!ativas.length) return `<div class="painel">${vazio("Nenhuma disciplina ainda", "Consolide uma sessão para ver a evolução por disciplina.")}</div>`;
+    if (!discSel || !ativas.includes(discSel)) discSel = ativas[0];
+    const ts = topicos.filter(t => t.disciplina === discSel).sort((a, b) => a.nivel - b.nivel);
+    const { nivel, lacunas } = nivelDisc(discSel);
+    const linhas = ts.map((t, i) => {
+      const id = `${discSel}::${t.topico}`;
+      const aberto = abertos.has(id);
+      const lacMax = [...t.lacunas].sort((a, b) => b.importancia * b.vezes - a.importancia * a.vezes)[0];
+      const det = aberto ? `<tr class="detalhe"><td colspan="7"><div class="detalhe-grid">
+          <div><h3>Lacunas abertas (${t.lacunas.length})</h3>${t.lacunas.length ? `<ul>${t.lacunas.map(l => `<li>${esc(l.texto)} <span style="color:var(--muted)">· ${l.vezes}x</span></li>`).join("")}</ul>` : `<span style="color:var(--muted)">Nenhuma</span>`}</div>
+          <div><h3>Erros conceituais</h3>${t.erros.length ? `<ul>${t.erros.map(e => `<li>${esc(e.texto)} <span style="color:var(--muted)">· ${fmtData(e.data)}</span></li>`).join("")}</ul>` : `<span style="color:var(--muted)">Nenhum</span>`}</div>
+          <div><h3>Histórico</h3><span class="num">${t.serie.map(q => `${fmtData(q.data)}: ${fmtNum(q.nota)}`).join(" · ")}</span><br><span style="color:var(--muted)">${t.cards} flashcards gerados</span></div>
+        </div></td></tr>` : "";
+      return `<tr class="linha" data-toggle="${esc(id)}">
+        <td><button class="expand-btn" id="exp-${i}" aria-expanded="${aberto}"><span class="seta">›</span>${esc(t.topico)}</button></td>
+        <td class="r num"><b>${fmtNum(t.nivel)}</b></td>
+        <td>${chipNivel(t.nivel)} ${setaTend(t.tendencia)}</td>
+        <td>${sparkline(t.serie)}</td>
+        <td class="num">${fmtData(t.ultima)}</td>
+        <td>${chipProxima(t.proxima)}</td>
+        <td class="lacuna-chave">${lacMax ? esc(lacMax.texto) : `<span style="color:var(--muted)">—</span>`}</td>
+      </tr>${det}`;
+    }).join("");
+    return `<div style="display:grid;gap:20px">
+      <div class="seg" role="group" aria-label="Escolher disciplina">${ativas.map(n => `<button data-disc="${esc(n)}" id="disc-${D.disciplinas.indexOf(n)}" aria-pressed="${n === discSel}"><span class="dot" style="background:${corDisc(n)}"></span>${esc(n)}</button>`).join("")}</div>
+      <section class="painel"><header><h2>${esc(discSel)}</h2><span class="sub">nível médio <b style="color:var(--ink)">${fmtNum(nivel)}</b> · ${ts.length} tópicos · ${lacunas} lacunas abertas</span></header>${linhaEvolucao(discSel)}</section>
+      <section class="painel"><header><h2>Tópicos</h2><span class="sub">do mais frágil ao mais firme · clique para ver lacunas e erros</span></header>
+        <div class="tabela-wrap"><table>
+          <thead><tr><th>Tópico</th><th class="r">Nível</th><th>Situação</th><th>Últimas notas</th><th>Última</th><th>Próxima</th><th>Lacuna-chave</th></tr></thead>
+          <tbody>${linhas}</tbody></table></div></section>
+    </div>`;
+  }
+
+  // =====================================================================
+  // PAUTA DE REVISÕES
+  // =====================================================================
+  let filtroPauta = null;
+  function vistaPauta() {
+    const grupos = {
+      atrasadas: { rot: "Atrasadas", itens: topicos.filter(t => t.proxima < HOJE) },
+      hoje: { rot: "Hoje", itens: topicos.filter(t => t.proxima === HOJE) },
+      semana: { rot: "Próximos 7 dias", itens: topicos.filter(t => t.proxima > HOJE && t.proxima <= addDias(HOJE, 7)) },
+      depois: { rot: "Programadas", itens: topicos.filter(t => t.proxima > addDias(HOJE, 7)) },
+    };
+    if (!filtroPauta) filtroPauta = grupos.atrasadas.itens.length ? "atrasadas" : grupos.hoje.itens.length ? "hoje" : "semana";
+    const g = grupos[filtroPauta];
+    const itens = [...g.itens].sort((a, b) => a.proxima.localeCompare(b.proxima) || a.nivel - b.nivel);
+    const lista = itens.length ? itens.map(t => {
+      const d = parse(t.proxima), dd = difDias(HOJE, t.proxima);
+      const lac = [...t.lacunas].sort((a, b) => b.importancia * b.vezes - a.importancia * a.vezes)[0];
+      const quando = dd < 0 ? `<span class="chip crit">${ICONES.crit}atrasada há ${-dd} ${dd === -1 ? "dia" : "dias"}</span>` : dd === 0 ? `<span class="chip warn">${ICONES.warn}revisar hoje</span>` : `<span class="chip neutro">em ${dd} ${dd === 1 ? "dia" : "dias"}</span>`;
+      return `<div class="pauta-item">
+        <div class="pauta-data"><b>${String(d.getDate()).padStart(2, "0")}</b><span>${MESES[d.getMonth()]} · ${DIAS_SEM[d.getDay()]}</span></div>
+        <div class="pauta-corpo"><span class="t">${esc(t.topico)}</span>
+          <span class="m"><span style="display:inline-flex;align-items:center;gap:6px"><span class="dot" style="background:${corDisc(t.disciplina)}"></span>${esc(t.disciplina)}</span><span>nível ${fmtNum(t.nivel)}</span><span>última em ${fmtData(t.ultima)}</span></span>
+          ${lac ? `<span class="lac">Retestar: ${esc(lac.texto)}</span>` : ""}</div>
+        <div class="pauta-lado">${quando}${chipNivel(t.nivel)}</div>
+      </div>`;
+    }).join("") : vazio(`Nada em “${g.rot.toLowerCase()}”`, filtroPauta === "atrasadas" ? "Todas as revisões estão em dia." : "Nenhum tópico agendado neste intervalo.");
+    return `<section class="painel"><header><h2>Pauta de revisões</h2>
+      <div class="seg" role="group" aria-label="Filtrar a pauta">${Object.entries(grupos).map(([k, v]) => `<button id="pauta-${k}" data-pauta="${k}" aria-pressed="${k === filtroPauta}">${v.rot} <span class="n num">${v.itens.length}</span></button>`).join("")}</div>
+      </header><div class="pauta">${lista}</div>
+      <p class="nota-rodape">Intervalos: nota abaixo de 5 → 1 dia · de 5 a 7 → 3 dias · de 7 a 9 → 7 dias · 9 ou mais duas vezes seguidas → 21 dias.</p></section>`;
+  }
+
+  // =====================================================================
+  // HISTÓRICO
+  // =====================================================================
+  const sessAbertas = new Set();
+  function vistaHistorico() {
+    if (!sessoes.length) return `<div class="painel">${vazio("Sem sessões", "O histórico mostra cada sessão encerrada.")}</div>`;
+    const lista = [...sessoes].reverse();
+    const linhas = lista.map((s, i) => {
+      const aberto = sessAbertas.has(s.id);
+      const modo = s.modo === "objetiva" ? "Objetiva" : s.modo === "mista" ? "Mista" : "Discursiva";
+      const obj = s.obj_total ? `${s.obj_acertos}/${s.obj_total}` : "—";
+      const det = aberto ? `<tr class="detalhe"><td colspan="7"><div class="tabela-wrap"><table>
+          <thead><tr><th>Disciplina</th><th>Tópico</th><th class="r">Perguntas</th><th class="r">Nota</th></tr></thead>
+          <tbody>${s.topicos.map(t => `<tr><td><span style="display:inline-flex;gap:6px;align-items:center"><span class="dot" style="background:${corDisc(t.disciplina)}"></span>${esc(t.disciplina)}</span></td><td>${esc(t.topico)}</td><td class="r num">${t.n}</td><td class="r num"><b>${fmtNum(t.nota)}</b></td></tr>`).join("")}</tbody></table></div>
+          ${Object.keys(s.tipos_erro || {}).length ? `<p class="nota-rodape">Erros nas objetivas: ${Object.entries(s.tipos_erro).map(([k, v]) => `${ROT_ERRO[k] || k} ${v}`).join(" · ")}${s.chutes ? ` · acertos por chute ${s.chutes}` : ""}</p>` : ""}
+        </td></tr>` : "";
+      return `<tr class="linha" data-sessao="${esc(s.id)}">
+        <td><button class="expand-btn" id="sess-${i}" aria-expanded="${aberto}"><span class="seta">›</span><span class="num">${fmtData(s.data)}/${s.data.slice(2, 4)}</span></button></td>
+        <td>${esc(s.tema)}</td>
+        <td><span class="chip neutro">${modo}</span></td>
+        <td class="r num">${fmtHoras(s.duracao_min)}</td>
+        <td class="r num">${s.n}</td>
+        <td class="r num">${obj}</td>
+        <td class="r num"><b>${fmtNum(s.nota)}</b></td>
+      </tr>${det}`;
+    }).join("");
+    return `<section class="painel"><header><h2>Histórico de sessões</h2><span class="sub">${sessoes.length} sessões · duração estimada pelo horário das respostas</span></header>
+      <div class="tabela-wrap"><table>
+        <thead><tr><th>Data</th><th>Tema</th><th>Modo</th><th class="r">Duração</th><th class="r">Perguntas</th><th class="r">Objetivas</th><th class="r">Nota</th></tr></thead>
+        <tbody>${linhas}</tbody></table></div></section>`;
+  }
+
+  // =====================================================================
+  // LACUNAS E ERROS
+  // =====================================================================
+  const ROT_ERRO = { conteudo: "Conteúdo", leitura: "Leitura", pegadinha: "Pegadinha", chute: "Chute" };
+  function vistaLacunas() {
+    const todas = topicos.flatMap(t => t.lacunas.map(l => ({ ...l, t }))).sort((a, b) => b.importancia * b.vezes - a.importancia * a.vezes || a.t.nivel - b.t.nivel);
+    const ranking = todas.length ? `<ol class="ranking">${todas.slice(0, 20).map(l => `<li>
+        <span class="peso num" title="importância × recorrência">${l.importancia * l.vezes}</span>
+        <span class="txt"><span>${esc(l.texto)}</span>
+          <span class="meta"><span style="display:inline-flex;gap:6px;align-items:center"><span class="dot" style="background:${corDisc(l.t.disciplina)}"></span>${esc(l.t.disciplina)} · ${esc(l.t.topico)}</span>
+          <span title="importância ${l.importancia} de 3" class="imp">${[1, 2, 3].map(k => `<i class="${k <= l.importancia ? "on" : ""}"></i>`).join("")}</span>
+          ${l.vezes > 1 ? `<span class="chip crit">${ICONES.crit}${l.vezes}x</span>` : ""}</span></span></li>`).join("")}</ol>`
+      : vazio("Nenhuma lacuna aberta", "Tudo o que foi perguntado até aqui foi entregue.");
+    const erros = topicos.flatMap(t => t.erros.map(e => ({ ...e, t }))).sort((a, b) => b.data.localeCompare(a.data));
+    const listaErros = erros.length ? `<ul class="ranking">${erros.slice(0, 12).map(e => `<li style="grid-template-columns:minmax(0,1fr)"><span class="txt"><span>${esc(e.texto)}</span><span class="meta"><span>${esc(e.t.disciplina)} · ${esc(e.t.topico)}</span><span class="num">${fmtData(e.data)}</span></span></span></li>`).join("")}</ul>`
+      : vazio("Nenhum erro conceitual", "Omissões contam como lacunas; aqui entram só afirmações erradas.");
+
+    const tipos = {};
+    sessoes.forEach(s => Object.entries(s.tipos_erro || {}).forEach(([k, v]) => { tipos[k] = (tipos[k] || 0) + v; }));
+    const totalErros = Object.values(tipos).reduce((a, b) => a + b, 0);
+    const barrasErro = totalErros ? Object.entries(tipos).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div class="hbar"><span>${ROT_ERRO[k] || esc(k)}</span><span class="trilho" data-tip="${esc(`<b>${ROT_ERRO[k] || k}</b>: ${v} de ${totalErros} erros`)}"><i style="width:${(v / totalErros) * 100}%"></i></span><span class="valor">${v} · ${Math.round((v / totalErros) * 100)}%</span></div>`).join("")
+      : vazio("Sem erros em objetivas", "Os tipos de erro aparecem quando houver questões objetivas erradas.");
+    const c = D.calibragem || {};
+    const temCalib = ["certeza", "duvida", "chute"].some(k => c[k] && c[k].n);
+    const calib = temCalib ? ["certeza", "duvida", "chute"].map(k => {
+      const v = c[k] || { n: 0, acertos: 0 }, pct = v.n ? v.acertos / v.n : 0;
+      const rot = { certeza: "Certeza", duvida: "Dúvida", chute: "Chute" }[k];
+      return `<div class="hbar"><span>${rot}</span><span class="trilho" data-tip="${esc(`<b>${rot}</b>: ${v.acertos} acertos em ${v.n} respostas`)}"><i style="width:${pct * 100}%"></i></span><span class="valor">${v.n ? Math.round(pct * 100) + "%" : "—"} <span style="color:var(--muted)">(${v.n})</span></span></div>`;
+    }).join("") + `<p class="nota-rodape">Percentual de acerto conforme a certeza declarada. Bem calibrado: “certeza” perto de 100% e “chute” baixo.</p>`
+      : vazio("Sem objetivas", "A calibragem aparece depois de sessões objetivas.");
+
+    return `<div style="display:grid;gap:20px">
+      <div class="grade-2">
+        <section class="painel"><header><h2>Lacunas abertas</h2><span class="sub">${todas.length} no total · ordenadas por importância × recorrência</span></header>${ranking}</section>
+        <div style="display:grid;gap:20px;align-content:start">
+          <section class="painel"><header><h2>Erros conceituais</h2><span class="sub">mais recentes primeiro</span></header>${listaErros}</section>
+          <section class="painel"><header><h2>Objetivas: tipos de erro</h2></header>${barrasErro}</section>
+          <section class="painel"><header><h2>Calibragem da certeza</h2></header>${calib}</section>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // =====================================================================
+  // navegação
+  // =====================================================================
+  const VISTAS = { geral: vistaGeral, disciplinas: vistaDisciplinas, pauta: vistaPauta, historico: vistaHistorico, lacunas: vistaLacunas };
+  let aba = "geral";
+  try { const salva = localStorage.getItem("rva-aba"); if (salva && VISTAS[salva]) aba = salva; } catch (e) {}
+
+  function render() {
+    esconderTip();
+    document.querySelectorAll("nav.abas button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.aba === aba)));
+    main.innerHTML = VISTAS[aba]();
+    ligarTips(main);
+  }
+  function irPara(nova) { aba = nova; try { localStorage.setItem("rva-aba", nova); } catch (e) {} render(); window.scrollTo({ top: 0 }); }
+
+  document.querySelector("nav.abas").addEventListener("click", e => { const b = e.target.closest("button[data-aba]"); if (b) irPara(b.dataset.aba); });
+  main.addEventListener("click", e => {
+    const alvo = e.target;
+    const irDisc = alvo.closest("[data-ir-disc]"); if (irDisc) { discSel = irDisc.dataset.irDisc; irPara("disciplinas"); return; }
+    const sem = alvo.closest("[data-sem]"); if (sem) { modoSemanal = sem.dataset.sem; render(); return; }
+    const disc = alvo.closest("[data-disc]"); if (disc) { discSel = disc.dataset.disc; render(); return; }
+    const pauta = alvo.closest("[data-pauta]"); if (pauta) { filtroPauta = pauta.dataset.pauta; render(); return; }
+    const tg = alvo.closest("[data-toggle]"); if (tg) { const id = tg.dataset.toggle; abertos.has(id) ? abertos.delete(id) : abertos.add(id); render(); return; }
+    const ss = alvo.closest("[data-sessao]"); if (ss) { const id = ss.dataset.sessao; sessAbertas.has(id) ? sessAbertas.delete(id) : sessAbertas.add(id); render(); }
+  });
+  render();
+})();
+</script>

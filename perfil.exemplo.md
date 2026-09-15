@@ -11,4 +11,7 @@
 - **Disciplinas prioritárias:** Direito Civil, Processo Civil, Direito Penal, Processo Penal
 - **Data da prova:** AAAA-MM-DD
 - **Tamanho padrão da sessão:** 10 perguntas
+- **Modo de correção:** imediata  <!-- imediata | final (modo prova: tudo corrigido no fechamento) -->
+- **Avaliação em segundo plano:** não  <!-- sim: um subagente corrige enquanto a próxima pergunta já aparece -->
+
 - **Observações:** respondo por voz (ditado); corrigir só conteúdo.

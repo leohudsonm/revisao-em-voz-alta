@@ -32,7 +32,10 @@ Se o pedido não deixar claro o modo, pergunte uma única vez: discursiva ou obj
    ter mudado (superação, modulação, lei nova).
 7. **Português do Brasil**, tom de examinador exigente e respeitoso. Correções no chat curtas; o aprofundamento
    vai para o PDF.
-8. Comandos da pessoa durante a sessão: **"pular"**, **"repetir"**, **"mais difícil"/"mais fácil"**, **"encerrar"**.
+8. **Modo de correção** (`perfil.md`): *imediata* (padrão) ou *final* ("modo prova": nada de nota ou comentário
+   até o fechamento). **Avaliação em segundo plano**: um subagente corrige e registra enquanto a próxima pergunta
+   já é feita. A pessoa pode trocar os dois a qualquer momento.
+9. Comandos da pessoa durante a sessão: **"pular"**, **"repetir"**, **"mais difícil"/"mais fácil"**, **"encerrar"**.
 
 ## Estrutura
 - `perfil.md`: cargo, banca, fase, disciplinas (criado a partir de `perfil.exemplo.md` na primeira sessão).

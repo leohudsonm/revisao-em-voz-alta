@@ -55,7 +55,18 @@ Responda a letra e a certeza: certeza, dúvida ou chute.
 Certo/errado (Cebraspe): apresente o item e peça "certo ou errado + certeza".
 A pessoa pode responder falando ("acho que é a C, com dúvida"): interprete com boa-fé; se faltar a certeza, pergunte.
 
-## 4. Correção (curta)
+## 4. Modos de correção
+Leia `Modo de correção` e `Avaliação em segundo plano` no `perfil.md` (padrão: imediata, não). A pessoa pode trocar
+a qualquer momento ("corrige só no final", "simulado"); mude na hora e atualize o `perfil.md`.
+- **Imediata** (padrão): correção curta após cada questão (formato abaixo).
+- **Final ("modo prova"/simulado)**: não revele gabarito, acerto ou comentário durante a sessão. Registre e
+  apresente a próxima questão ("Resposta registrada."). No fechamento, a skill `analise-desempenho-revisao`
+  mostra a correção de cada questão. Guarde no registro o `enunciado` e as `alternativas` para a correção final.
+- **Blocos de 5**: meio-termo; correção ao fim de cada bloco.
+- **Avaliação em segundo plano**: raramente necessária em objetivas (o acerto é imediato). Use só se a pessoa
+  justificar as respostas por extenso e pedir; siga o mesmo esquema de `revisao-discursiva-oral` (seção 5).
+
+## 5. Correção (curta)
 ```
 **Gabarito: C** — você marcou B (dúvida) ❌
 ✔ C: <por que está certa, com o fundamento em 1 linha>
@@ -76,7 +87,7 @@ A pessoa pode responder falando ("acho que é a C, com dúvida"): interprete com
   - omita se acertou com certeza.
 - No modo **blocos de 5**: apresente as 5, receba as 5 respostas, corrija em sequência e registre as 5 de uma vez (lista JSON).
 
-## 5. Registro (obrigatório, antes de enviar a correção)
+## 6. Registro (obrigatório, antes de enviar a correção ou a próxima questão)
 ```bash
 python scripts/sessao.py registrar sessoes/<sessão> <<'EOF'
 {"tipo":"objetiva","disciplina":"Direito Administrativo","topico":"Improbidade administrativa",
@@ -94,6 +105,6 @@ EOF
 - `lacunas_superadas`: acertou com certeza uma questão que mirava uma lacuna aberta → copie o texto exato dela.
 - `erros_conceituais`: quando a pessoa justificar a escolha com uma afirmação errada.
 
-## 6. Encerramento
+## 7. Encerramento
 Ao fim do plano ou em "encerrar": siga a skill `analise-desempenho-revisao`. No PDF, a parte objetiva enfatiza
 **como a banca cobra** e **onde está a pegadinha** de cada lacuna.

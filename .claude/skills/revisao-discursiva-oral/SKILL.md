@@ -52,7 +52,28 @@ A resposta é **falada**: avalia-se o **conteúdo**, nunca a forma.
   `references/rubrica.md`. Base: trecho do material (leia só as linhas do tópico), espelho do `banco/`, conhecimento consolidado.
 - Adapte: duas notas ≥ 8 seguidas → aumente a dificuldade; duas < 4 → quebre o tema em perguntas menores.
 
-## 5. Como corrigir (só conteúdo)
+## 5. Modos de correção
+Leia `Modo de correção` e `Avaliação em segundo plano` no `perfil.md` (padrão: imediata, não). A pessoa pode
+trocar a qualquer momento ("corrige só no final", "pode corrigir agora", "avalia em segundo plano"): mude
+na hora e atualize o `perfil.md` para as próximas sessões.
+
+| Modo | Durante a sessão | No fechamento |
+|---|---|---|
+| **Imediata** (padrão) | correção curta (formato abaixo) + próxima pergunta na mesma mensagem | resumo + PDF |
+| **Final ("modo prova")** | **nenhuma** nota, comentário ou dica: registrar e fazer a próxima pergunta ("Resposta registrada." + pergunta) | correção de **cada** pergunta no chat (tabela da skill `analise-desempenho-revisao`) + PDF |
+
+**Avaliação em segundo plano** (combina com os dois modos, mais útil no modo final): assim que a resposta chegar,
+lance um subagente em segundo plano (ferramenta de agentes, `run_in_background: true`, modelo rápido) com o
+modelo de `references/prompt-avaliador.md` preenchido — pergunta, rubrica oculta, linhas do material e a resposta
+**literal**. O subagente corrige e roda o `registrar`; você apresenta a próxima pergunta **imediatamente**, sem
+esperar. Regras:
+- Monte a rubrica oculta **você mesmo** antes de delegar (é ela que garante a qualidade); o subagente só aplica.
+- Quando o aviso de conclusão chegar, **não** mostre a nota no modo final; no máximo "Pergunta N registrada".
+- Se o subagente relatar número de registro fora de ordem ou erro, confira com `metricas` no fechamento.
+- Não encerre a sessão (Skill 3) enquanto houver avaliação em andamento.
+- Sem ferramenta de agentes disponível: avalie você mesmo, em silêncio, e siga.
+
+## 6. Como corrigir (só conteúdo)
 Ignore estrutura, ordem, repetição, hesitação e vícios de fala. Termo jurídico evidentemente trocado pelo ditado
 ("usu capião", "art. mil duzentos e quarenta a") conta como dito corretamente. Resposta genérica que só "tangencia"
 o ponto é **parcial**, não entregue.
@@ -67,8 +88,9 @@ Formato no chat (curto):
 **Para fechar o ponto na prova:** <1 ou 2 frases com o núcleo que o examinador procura>
 ```
 Em seguida, na **mesma mensagem**, a próxima pergunta (fluxo contínuo para quem responde falando).
+No modo final, esse formato não aparece durante a sessão: a avaliação é feita e registrada, mas só é mostrada no fechamento.
 
-## 6. Registro (obrigatório, antes de enviar a correção)
+## 7. Registro (obrigatório, antes de enviar a correção ou a próxima pergunta)
 Grave um JSON por pergunta/item. Com Bash:
 ```bash
 python scripts/sessao.py registrar sessoes/<sessão> <<'EOF'
@@ -99,6 +121,6 @@ Regras dos campos:
 - `importancia`: 3 = tema recorrente/central na prova; 2 = relevante; 1 = detalhe.
 - Pergunta pulada não é registrada.
 
-## 7. Encerramento
+## 8. Encerramento
 Quando o plano terminar ou a pessoa disser "encerrar": diga "Encerrando e analisando o desempenho" e siga a skill
 `analise-desempenho-revisao` para esta sessão. Se a pessoa sair sem encerrar, a próxima abertura consolida.

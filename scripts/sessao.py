@@ -12,7 +12,7 @@ Comandos:
     abrir                         resumo de abertura: perfil, pendências, revisões vencidas, painel
     nova --modo M --tema T [--material SLUG]   cria sessoes/AAAA-MM-DD_<tema>/
     registrar SESSAO [--json J | --arquivo F]  acrescenta pergunta(s) corrigida(s) (JSON via stdin, --json ou arquivo)
-    metricas SESSAO               métricas da sessão por tópico, com nível anterior e projeção
+    metricas SESSAO [--pontos]    métricas da sessão por tópico, com nível anterior e projeção
     consolidar SESSAO             atualiza estado.json e regenera painel e arquivos de tópico
     cards SESSAO                  remove flashcards duplicados do TSV e registra os novos
     topico DISCIPLINA TOPICO      mostra o arquivo de detalhe do tópico
@@ -416,6 +416,12 @@ def cmd_metricas(args) -> None:
         for r in rs:
             lac = "; ".join(r["lacunas"]) or "—"
             print(f"- #{r['n']} [{r['tipo'][:4]} · imp {r['importancia']} · nota {r['nota']:.1f}] {r['pergunta'][:110]}")
+            if getattr(args, "pontos", False):
+                if r["tipo"] == "objetiva":
+                    print(f"  resposta {r['resposta']} ({r['certeza']}) · gabarito {r['gabarito']} · "
+                          f"{'acertou' if r['acertou'] else 'errou'}{' · ' + r['tipo_erro'] if r.get('tipo_erro') else ''}")
+                for p in r.get("pontos", []):
+                    print(f"  [{p.get('status', '?')}] ({p.get('peso', '?')}) {p.get('ponto', '')}")
             print(f"  lacunas: {lac}")
             if r["erros_conceituais"]:
                 print(f"  ERROS CONCEITUAIS: {'; '.join(r['erros_conceituais'])}")
@@ -766,6 +772,8 @@ def main() -> None:
     for nome, f in (("metricas", cmd_metricas), ("consolidar", cmd_consolidar), ("cards", cmd_cards)):
         p = sub.add_parser(nome)
         p.add_argument("sessao")
+        if nome == "metricas":
+            p.add_argument("--pontos", action="store_true", help="inclui o status de cada ponto (correção no fechamento)")
         p.set_defaults(f=f)
     p = sub.add_parser("exportar")
     p.add_argument("--exemplo", action="store_true", help="gera dashboard/dados.exemplo.js com histórico fictício")

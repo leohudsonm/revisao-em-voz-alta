@@ -9,8 +9,10 @@ Ordem obrigatória: **consolidar → analisar → PDF → flashcards → dashboa
 Consolidar primeiro garante que o histórico é salvo mesmo se algo falhar depois.
 
 ## 1. Consolidar (script, sem reescrever nada à mão)
+0. Se houver **avaliações em segundo plano** ainda rodando, espere todas terminarem antes de consolidar.
 1. Descubra a sessão (a atual; ou a mais recente com `consolidada: false`, que o `abrir` lista).
-2. `python scripts/sessao.py metricas sessoes/<sessão>` → guarde a saída: é a base da análise
+2. `python scripts/sessao.py metricas sessoes/<sessão>` (no **modo de correção final**, use `--pontos`, que
+   inclui o status de cada ponto, a resposta marcada e o gabarito) → guarde a saída: é a base da análise
    (nota por tópico, nível anterior, tendência, lacunas priorizadas).
 3. `python scripts/sessao.py consolidar sessoes/<sessão>` → atualiza `estado.json`, reescreve `painel.md`
    (limitado a 80 linhas), os arquivos de tópico e marca a sessão como consolidada.
@@ -65,6 +67,16 @@ O `consolidar` e o `cards` já regeneram `dashboard/dados.js`; falta só publica
 - Consolidação de sessão pendente disparada na abertura de outra sessão: **não** publique; a próxima sessão encerrada publica tudo.
 
 ## 6. Entrega no chat
+**Modo de correção final:** antes do resumo, mostre a correção de **cada** pergunta, já que a pessoa ainda não viu
+nenhuma. Use uma tabela compacta, com uma linha por pergunta:
+```
+| # | Tópico | Nota | Principais pontos |
+|---|---|---|---|
+| 1 | <tópico> | 6,0 | ✅ <entregou> · ◐ <parcial — o que faltou> · ❌ <faltou> · ⚠️ <erro → correto> |
+```
+Nas objetivas, a coluna de pontos traz: gabarito × resposta (certeza), por que a correta está certa e a pegadinha.
+Erros conceituais sempre aparecem por extenso. O detalhamento completo fica no PDF.
+
 Envie o PDF e o TSV (use a ferramenta de envio de arquivos, se existir) e escreva um resumo curto:
 ```
 **Sessão <tema>** — <n> perguntas · nota média <x>

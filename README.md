@@ -33,6 +33,9 @@ No fim de qualquer sessão, a skill `analise-desempenho-revisao` consolida o his
 2. Ative o ditado (no app, o botão de microfone; ou o ditado do sistema: **Win + H** no Windows, **Fn Fn** no Mac)
    e responda falando. Não se preocupe com a estrutura: só o conteúdo é avaliado.
 3. Comandos durante a sessão: **pular**, **repetir**, **mais difícil**, **mais fácil**, **encerrar**.
+   Dois modos opcionais (configure em `perfil.md` ou peça durante a sessão):
+   - **Correção no final ("modo prova")**: nenhuma nota ou comentário durante a sessão; tudo é corrigido no fechamento.
+   - **Avaliação em segundo plano**: um subagente corrige e registra cada resposta enquanto a próxima pergunta já aparece.
 4. Ao encerrar, você recebe:
    - `sessoes/<data>_<tema>/revisao.pdf`: o material dirigido às suas lacunas;
    - `sessoes/<data>_<tema>/flashcards.tsv`: importe no Anki (Arquivo → Importar; separador Tab; permitir HTML; 3º campo = Tags);

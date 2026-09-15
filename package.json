@@ -1,0 +1,8 @@
+{
+  "name": "revisao-em-voz-alta",
+  "private": true,
+  "description": "Dependência para gerar o material de revisão em DOCX (scripts/gerar_docx.js)",
+  "dependencies": {
+    "docx": "^9.5.1"
+  }
+}

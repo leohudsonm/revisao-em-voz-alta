@@ -417,6 +417,10 @@ def cmd_metricas(args) -> None:
             lac = "; ".join(r["lacunas"]) or "—"
             print(f"- #{r['n']} [{r['tipo'][:4]} · imp {r['importancia']} · nota {r['nota']:.1f}] {r['pergunta'][:110]}")
             if getattr(args, "pontos", False):
+                if r.get("enunciado"):
+                    print(f"  enunciado: {r['enunciado']}")
+                for alt in r.get("alternativas", []):
+                    print(f"    {alt}")
                 if r["tipo"] == "objetiva":
                     print(f"  resposta {r['resposta']} ({r['certeza']}) · gabarito {r['gabarito']} · "
                           f"{'acertou' if r['acertou'] else 'errou'}{' · ' + r['tipo_erro'] if r.get('tipo_erro') else ''}")
@@ -521,11 +525,67 @@ def cmd_consolidar(args) -> None:
     print(f"dashboard: {exportar().relative_to(RAIZ).as_posix()} atualizado")
 
 
+WRAPPER_NOTION = '<div style="font-family:-apple-system,'
+RE_EMOJI = re.compile("[☀-➿\U0001F300-\U0001FAFF]")
+
+
+def validar_card_notion(n: int, frente: str, verso: str) -> list[str]:
+    """Checagem do formato estilo Notion (ver references/modelo-flashcard-notion.md)."""
+    p = []
+    if "<" in frente or ">" in frente:
+        p.append("frente com HTML (deve ser texto puro)")
+    if RE_EMOJI.search(frente):
+        p.append("frente com emoji")
+    for campo, txt in (("frente", frente), ("verso", verso)):
+        if "—" in txt or "–" in txt:
+            p.append(f"travessão na {campo}")
+    if not verso.startswith(WRAPPER_NOTION) or not verso.rstrip().endswith("</div>"):
+        p.append("verso sem o wrapper <div style=\"font-family:...\"> ... </div>")
+    if '<hr style="' not in verso:
+        p.append("verso sem <hr> separando a resposta direta dos blocos")
+    if "background:#FDF3C0" not in verso:
+        p.append("verso sem grifo amarelo no núcleo da resposta")
+    for tag in ("p", "ul", "ol", "li", "table"):
+        if re.search(rf"<{tag}>", verso):
+            p.append(f"<{tag}> sem style inline")
+    if re.search(r"<strong>|<br>\s*<br>|background-color:\s*yellow", verso, re.I):
+        p.append("marcação antiga (<strong>, <br><br> ou background-color: yellow)")
+    for g in re.findall(r'<span style="background:#FDF3C0[^"]*">(.*?)</span>', verso):
+        palavras = len(re.sub(r"<[^>]+>", " ", g).split())
+        if palavras > 10:
+            p.append(f"grifo amarelo com {palavras} palavras (máx. 7, recomendado)")
+        if "<b>" not in g:
+            p.append("grifo amarelo sem <b>")
+    callouts = len(re.findall(r"border-radius:6px;padding:10px 12px", verso))
+    if callouts > 1:
+        p.append(f"{callouts} callouts (máx. 1)")
+    visivel = len(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", verso)).strip())
+    if visivel > 2000:
+        p.append(f"verso longo demais ({visivel} caracteres visíveis; alvo 500 a 1.500)")
+    return [f"card {n}: {x}" for x in p]
+
+
 def cmd_cards(args) -> None:
     pasta = pasta_sessao(args.sessao)
     tsv = pasta / "flashcards.tsv"
     if not tsv.exists():
         erro("flashcards.tsv não encontrado na sessão")
+    problemas = []
+    n = 0
+    for linha in tsv.read_text(encoding="utf-8").splitlines():
+        if not linha.strip() or linha.startswith("#"):
+            continue
+        n += 1
+        partes = linha.split("\t")
+        if len(partes) != 3:
+            problemas.append(f"card {n}: {len(partes)} colunas (esperado 3: frente, verso, tags)")
+            continue
+        problemas += validar_card_notion(n, partes[0], partes[1])
+    if problemas:
+        print("flashcards.tsv recusado. Corrija conforme references/modelo-flashcard-notion.md:", file=sys.stderr)
+        for pr in problemas:
+            print(f"  - {pr}", file=sys.stderr)
+        sys.exit(1)
     estado = carregar_estado()
     manter, duplicados, sem_topico = [], [], []
     tocados = set()

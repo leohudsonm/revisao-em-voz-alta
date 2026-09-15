@@ -37,6 +37,7 @@ tolerâncias para fala e ditado) e `materiais/<slug>/texto.md`, linhas <início>
 4. Registre, a partir do diretório do projeto:
    python scripts/sessao.py registrar sessoes/<sessão> <<'EOF'
    {"tipo":"discursiva","disciplina":"<Disciplina>","topico":"<Tópico>","pergunta":"<resumo em 1 linha>",
+    "enunciado":"<enunciado completo, igual ao da pergunta acima>",
     "fonte":"<material p. X>","pontos":[{"ponto":"...","peso":"essencial","status":"entregou"}],
     "nota":0.0,"lacunas":[],"lacunas_superadas":[],"erros_conceituais":[],"importancia":<1-3>}
    EOF

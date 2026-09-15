@@ -22,3 +22,6 @@ Thumbs.db
 
 # Dashboard: dados reais gerados localmente
 dashboard/dados.js
+
+# Node
+node_modules/

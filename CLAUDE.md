@@ -2,7 +2,7 @@
 
 Projeto de revisão ativa para concursos (qualquer cargo, tribunal ou banca). A pessoa anexa um material de estudo,
 o Claude faz perguntas, ela responde **por voz (ditado)** e o Claude corrige, registra o desempenho e, ao final,
-entrega um PDF de revisão dirigido às lacunas e flashcards.
+entrega um material de revisão (DOCX e PDF) dirigido às lacunas e flashcards no estilo Notion.
 
 ## Qual skill usar
 | Pedido | Skill |
@@ -31,7 +31,7 @@ Se o pedido não deixar claro o modo, pergunte uma única vez: discursiva ou obj
    referência exata, dizer o entendimento e sinalizar "conferir a referência". Sinalizar entendimento que pode
    ter mudado (superação, modulação, lei nova).
 7. **Português do Brasil**, tom de examinador exigente e respeitoso. Correções no chat curtas; o aprofundamento
-   vai para o PDF.
+   vai para o material de revisão.
 8. **Modo de correção** (`perfil.md`): *imediata* (padrão) ou *final* ("modo prova": nada de nota ou comentário
    até o fechamento). **Avaliação em segundo plano**: um subagente corrige e registra enquanto a próxima pergunta
    já é feita. A pessoa pode trocar os dois a qualquer momento.
@@ -41,7 +41,7 @@ Se o pedido não deixar claro o modo, pergunte uma única vez: discursiva ou obj
 - `perfil.md`: cargo, banca, fase, disciplinas (criado a partir de `perfil.exemplo.md` na primeira sessão).
 - `materiais/<slug>/`: `original.*`, `texto.md`, `indice.md` (gerados por `scripts/extrair_material.py`).
 - `banco/`: questões e espelhos que a pessoa tiver (opcional).
-- `sessoes/<data>_<tema>/`: `meta.json`, `sessao.jsonl`, `revisao.md`, `revisao.pdf`, `flashcards.tsv`.
+- `sessoes/<data>_<tema>/`: `meta.json`, `sessao.jsonl`, `revisao.md`, `revisao.docx`, `revisao.pdf`, `flashcards.tsv`.
 - `desempenho/`: `painel.md` e `topicos/` (gerados); `estado.json` (só o script lê); `dashboard.json` (URL do artefato).
 - `dashboard/`: `index.html` (painel), `dados.js` (gerado pelo script; nunca ler), `dados.exemplo.js` (demonstração).
-- Dependências: `pip install -r requirements.txt`. No Windows, se `python` não existir, tente `py`.
+- Dependências: `pip install -r requirements.txt` e `npm install` (Node, para o DOCX). O PDF usa as fontes de `assets/fonts`. No Windows, se `python` não existir, tente `py`.

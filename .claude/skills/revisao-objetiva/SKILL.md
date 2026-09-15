@@ -92,6 +92,7 @@ a qualquer momento ("corrige só no final", "simulado"); mude na hora e atualize
 python scripts/sessao.py registrar sessoes/<sessão> <<'EOF'
 {"tipo":"objetiva","disciplina":"Direito Administrativo","topico":"Improbidade administrativa",
  "pergunta":"Prescrição na Lei 8.429/92 após a Lei 14.230/21",
+ "enunciado":"<enunciado completo>", "alternativas":["A) ...","B) ...","C) ...","D) ...","E) ..."],
  "fonte":"autoral", "banca":"FGV",
  "resposta":"B","gabarito":"C","certeza":"duvida","tipo_erro":"pegadinha",
  "lacunas":["Prescrição da ação de improbidade: 8 anos contados do fato, com prescrição intercorrente de 4 anos"],

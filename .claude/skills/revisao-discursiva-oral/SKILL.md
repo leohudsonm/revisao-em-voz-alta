@@ -96,6 +96,7 @@ Grave um JSON por pergunta/item. Com Bash:
 python scripts/sessao.py registrar sessoes/<sessão> <<'EOF'
 {"tipo":"discursiva","disciplina":"Direito Civil","topico":"Usucapião","subtopico":"Usucapião familiar",
  "pergunta":"Requisitos da usucapião familiar e a natureza do 'abandono do lar'",
+ "enunciado":"Discorra sobre os requisitos da usucapião familiar e sobre a natureza do 'abandono do lar' exigido pela lei.",
  "fonte":"material p. 12",
  "pontos":[{"ponto":"prazo de 2 anos e metragem até 250 m²","peso":"essencial","status":"entregou"},
            {"ponto":"abandono do lar como abandono patrimonial/familiar, não culpa","peso":"essencial","status":"faltou"},
@@ -111,6 +112,8 @@ Sem Bash (PowerShell): grave o JSON em `sessoes/<sessão>/_registro.json` e rode
 `python scripts/sessao.py registrar sessoes/<sessão> --arquivo sessoes/<sessão>/_registro.json`.
 
 Regras dos campos:
+- `enunciado`: o **texto completo** da pergunta ou do item, como foi apresentado. É obrigatório no modo de correção
+  final, porque o fechamento repete cada pergunta antes do feedback. `pergunta` é só o resumo de 1 linha.
 - `lacunas`: cada item é uma **afirmação autônoma do conteúdo que faltou** (até 20 palavras), que sirva de verso de
   flashcard. Nada de "não soube o conceito". Se a lacuna **já estava aberta** no tópico e a pessoa errou de novo,
   copie o texto exato de lá (é assim que o script conta a recorrência).

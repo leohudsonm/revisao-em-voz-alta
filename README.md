@@ -1,7 +1,7 @@
 # Revisão em voz alta
 
 Revisão ativa para concursos com o **Claude Code**: você anexa seu material, o Claude faz perguntas,
-você **responde falando** (ditado), ele corrige, guarda seu desempenho e, no fim, gera um **PDF de revisão só com
+você **responde falando** (ditado), ele corrige, guarda seu desempenho e, no fim, gera um **material de revisão (DOCX e PDF) só com
 as suas lacunas** e **flashcards** para o Anki.
 
 Funciona para qualquer cargo, tribunal ou banca, em dois modos:
@@ -13,7 +13,7 @@ Funciona para qualquer cargo, tribunal ou banca, em dois modos:
 | Como é corrigido | rubrica oculta de pontos com peso; só conteúdo, nunca a forma | gabarito, erro de cada distratora, tipo de erro (conteúdo, leitura, pegadinha, chute) |
 | Skill | `revisao-discursiva-oral` | `revisao-objetiva` |
 
-No fim de qualquer sessão, a skill `analise-desempenho-revisao` consolida o histórico, gera o PDF e os flashcards.
+No fim de qualquer sessão, a skill `analise-desempenho-revisao` consolida o histórico, gera o material de revisão (DOCX e PDF) e os flashcards no estilo Notion.
 
 ## Instalação
 1. Tenha o [Claude Code](https://claude.com/claude-code) e o Python 3.10+.
@@ -21,7 +21,11 @@ No fim de qualquer sessão, a skill `analise-desempenho-revisao` consolida o his
 3. Instale as dependências:
    ```bash
    pip install -r requirements.txt
+   npm install
    ```
+   O PDF é gerado em Python, com as fontes já incluídas em `assets/fonts` (Open Sans e Bebas Neue, licença OFL).
+   O `npm install` (requer [Node.js](https://nodejs.org)) instala a biblioteca que gera a versão editável em DOCX;
+   para vê-la com as mesmas fontes no Word, instale as fontes de `assets/fonts`.
 4. (Opcional) Copie `perfil.exemplo.md` para `perfil.md` e preencha. Se não fizer, o Claude pergunta na primeira sessão.
 
 ## Como usar
@@ -37,8 +41,8 @@ No fim de qualquer sessão, a skill `analise-desempenho-revisao` consolida o his
    - **Correção no final ("modo prova")**: nenhuma nota ou comentário durante a sessão; tudo é corrigido no fechamento.
    - **Avaliação em segundo plano**: um subagente corrige e registra cada resposta enquanto a próxima pergunta já aparece.
 4. Ao encerrar, você recebe:
-   - `sessoes/<data>_<tema>/revisao.pdf`: o material dirigido às suas lacunas;
-   - `sessoes/<data>_<tema>/flashcards.tsv`: importe no Anki (Arquivo → Importar; separador Tab; permitir HTML; 3º campo = Tags);
+   - `sessoes/<data>_<tema>/revisao.pdf` e `revisao.docx`: o material dirigido às suas lacunas;
+   - `sessoes/<data>_<tema>/flashcards.tsv`: flashcards no estilo Notion; importe no Anki (Arquivo → Importar; separador Tab; permitir HTML; 3º campo = Tags);
    - o painel atualizado em `desempenho/painel.md`.
 
 Tem questões e espelhos de provas anteriores? Coloque em `banco/`: as skills usam como base de perguntas e rubricas.
@@ -77,10 +81,11 @@ Detalhes: `.claude/skills/analise-desempenho-revisao/references/formato-desempen
 ## Estrutura
 ```
 CLAUDE.md                     regras gerais (carregadas automaticamente)
-.claude/skills/               as 3 skills e seus guias (rubrica, estilos de banca, modelo do PDF)
+.claude/skills/               as 3 skills e seus guias (rubrica, estilos de banca, modelo do material e dos flashcards)
 scripts/sessao.py             abertura, sessões, registro, métricas, consolidação, flashcards
 scripts/extrair_material.py   PDF/DOCX/TXT → texto.md + índice
-scripts/gerar_pdf.py          revisao.md → revisao.pdf
+scripts/gerar_material.py     revisao.md → revisao.pdf (gerar_pdf.py) + revisao.docx (gerar_docx.js)
+assets/fonts/                 fontes do material (Open Sans, Bebas Neue; licença OFL)
 perfil.exemplo.md             modelo do seu perfil
 materiais/ banco/ sessoes/ desempenho/   seus dados (fora do git)
 ```

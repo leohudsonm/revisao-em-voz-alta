@@ -13,5 +13,7 @@
 - **Tamanho padrão da sessão:** 10 perguntas
 - **Modo de correção:** imediata  <!-- imediata | final (modo prova: tudo corrigido no fechamento) -->
 - **Avaliação em segundo plano:** não  <!-- sim: um subagente corrige enquanto a próxima pergunta já aparece -->
+- **Baralho Anki:** Revisão em voz alta::{materia}::{assunto}  <!-- ex.: Segunda Fase::{materia}::{assunto} -->
+- **Tipo de nota Anki:** Revisão em voz alta - Pergunta  <!-- criado automaticamente se não existir -->
 
 - **Observações:** respondo por voz (ditado); corrigir só conteúdo.

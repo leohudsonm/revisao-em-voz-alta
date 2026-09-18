@@ -529,13 +529,25 @@ WRAPPER_NOTION = '<div style="font-family:-apple-system,'
 RE_EMOJI = re.compile("[☀-➿\U0001F300-\U0001FAFF]")
 
 
+# Frente que cobra o número do dispositivo em vez do conteúdo (regra: nunca exigir decorar número).
+RE_PEDE_NUMERO = re.compile(
+    r"fundamentos?\s+lega(l|is)|qual\s+(o\s+)?(artigo|dispositivo|par[aá]grafo|inciso|al[ií]nea)|"
+    r"(em|por)\s+qual\s+(artigo|dispositivo)|quais\s+(os\s+)?(artigos|dispositivos)|"
+    r"(o\s+que|que)\s+(disp[õo]e|diz|estabelece|prev[eê])\s+(a|o)\s+(s[uú]mula|tema|art\.?|artigo|lei)\b|"
+    r"qual\s+(a\s+)?s[uú]mula|qual\s+(o\s+)?tema\b|n[uú]mero\s+d[oa]\s+(artigo|s[uú]mula|lei|tema)",
+    re.IGNORECASE,
+)
+
+
 def validar_card_notion(n: int, frente: str, verso: str) -> list[str]:
-    """Checagem do formato estilo Notion (ver references/modelo-flashcard-notion.md)."""
+    """Checagem do formato estilo Notion (ver .claude/skills/flashcards-estudo/references/modelo-notion.md)."""
     p = []
     if "<" in frente or ">" in frente:
         p.append("frente com HTML (deve ser texto puro)")
     if RE_EMOJI.search(frente):
         p.append("frente com emoji")
+    if RE_PEDE_NUMERO.search(frente):
+        p.append("frente exige decorar número de dispositivo, súmula, tema ou lei; pergunte o conteúdo e deixe o número no verso")
     for campo, txt in (("frente", frente), ("verso", verso)):
         if "—" in txt or "–" in txt:
             p.append(f"travessão na {campo}")
@@ -582,7 +594,7 @@ def cmd_cards(args) -> None:
             continue
         problemas += validar_card_notion(n, partes[0], partes[1])
     if problemas:
-        print("flashcards.tsv recusado. Corrija conforme references/modelo-flashcard-notion.md:", file=sys.stderr)
+        print("flashcards.tsv recusado. Corrija conforme .claude/skills/flashcards-estudo/references/modelo-notion.md:", file=sys.stderr)
         for pr in problemas:
             print(f"  - {pr}", file=sys.stderr)
         sys.exit(1)

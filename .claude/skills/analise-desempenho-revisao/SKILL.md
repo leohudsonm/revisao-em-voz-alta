@@ -45,20 +45,16 @@ Com a saída de `metricas` (não releia o `sessao.jsonl` inteiro, a menos que pr
 ## 4. Flashcards (só lacunas importantes)
 1. Leia a seção "Flashcards já gerados" dos arquivos de tópico envolvidos (`python scripts/sessao.py topico ...`)
    para não repetir.
-2. Regras: **1 lacuna autônoma = 1 card**; importância ≥ 2 ou recorrente; erros conceituais sempre viram card
-   (com callout 🚫 Pegadinha). Nada de card sobre o que a pessoa já acertou com certeza.
-3. **Formato estilo Notion, obrigatório:** siga `references/modelo-flashcard-notion.md`. A frente é texto puro; o
-   verso é HTML inline numa única linha (wrapper, resposta direta com grifo amarelo, `<hr>`, blocos com emoji,
-   no máximo 1 callout, citação cinza).
-4. Grave `sessoes/<sessão>/flashcards.tsv` (UTF-8, separado por TAB, sem cabeçalho, 3 colunas):
-   `frente<TAB>verso<TAB>tags`. Tags separadas por espaço, incluindo **obrigatoriamente**
-   `<slug-da-disciplina>::<slug-do-tópico>` (minúsculas, sem acento, hífens; ex.: `direito-civil::usucapiao`)
-   e `revisao-voz-alta`.
-5. `python scripts/sessao.py cards sessoes/<sessão>` → **valida o formato** (recusa o arquivo e aponta os erros),
+2. Siga a skill **`flashcards-estudo`** (`.claude/skills/flashcards-estudo/SKILL.md` e
+   `references/modelo-notion.md`), com a sessão como fonte: 1 lacuna autônoma = 1 card, importância ≥ 2 ou
+   recorrente, erros conceituais sempre viram card (callout 🚫), **pergunta direta e neutra**, nunca número de
+   artigo, súmula, tema ou lei na frente.
+3. Grave `sessoes/<sessão>/flashcards.tsv` (`frente<TAB>verso<TAB>tags`), com as tags
+   `<slug-da-disciplina>::<slug-do-tópico>` (ex.: `direito-civil::usucapiao`) e `revisao-voz-alta`.
+4. `python scripts/sessao.py cards sessoes/<sessão>` → **valida o formato** (recusa o arquivo e aponta os erros),
    remove duplicados e registra os cards no histórico. Corrija até passar.
-6. **Anki (opcional)**: se houver uma ferramenta de Anki conectada nesta sessão (MCP ou AnkiConnect), ofereça
-   enviar os cards para o deck `Revisão em voz alta::<Disciplina>`; se não houver, oriente a importação:
-   Anki → Arquivo → Importar → `flashcards.tsv` → separador Tab, permitir HTML, campo 3 = Tags.
+5. **Anki (opcional)**: ofereça enviar com `cards.py anki` (passo 6 da skill `flashcards-estudo`); o baralho e o
+   tipo de nota vêm do `perfil.md`.
 
 ## 5. Atualizar o dashboard
 O `consolidar` e o `cards` já regeneram `dashboard/dados.js`; falta só publicar.

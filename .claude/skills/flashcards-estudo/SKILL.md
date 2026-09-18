@@ -1,0 +1,59 @@
+---
+name: flashcards-estudo
+description: Cria flashcards de estudo no estilo Notion a partir de um material (livro, fotos de páginas, PDF, resumo, aula) ou das lacunas de uma sessão de revisão, valida o formato, gera um PDF de visualização e envia para o Anki (baralho e tipo de nota do perfil.md). Use quando a pessoa pedir "flashcards", "cards", "cria cards disso", "manda pro Anki", ou no passo de flashcards da skill analise-desempenho-revisao.
+---
+
+# Flashcards de estudo
+
+Formato completo, com paleta, blocos e exemplo: `references/modelo-notion.md` (leia antes de escrever os cards).
+Script: `python .claude/skills/flashcards-estudo/scripts/cards.py {validar|preview|anki}` (no Windows, `py` se
+`python` não existir).
+
+## 1. Fonte e fidelidade
+- Identifique a fonte e leia **só a parte** que vai virar card (páginas, tópico do `indice.md`, lacunas da sessão).
+- **A fonte é a referência.** O que está no livro ou material está certo: não acrescente afirmação externa que o
+  contradiga ou vá além dele. Anotações da pessoa na fonte também valem.
+- Nunca invente número de julgado, súmula, tema ou artigo. Na dúvida sobre a referência, deixe-a fora da citação.
+
+## 2. Selecionar o que vira card
+- **1 regra autônoma = 1 card.** Se uma regra só aparece "de carona" no verso de outro card, ela ganha card próprio.
+- Priorize o que cai em prova e o que a pessoa errou ou não lembrou. Nada de card sobre obviedade ou curiosidade.
+- Vindo de sessão de revisão: só lacunas importantes (importância ≥ 2 ou recorrentes) e erros conceituais (estes
+  com callout 🚫). Nada sobre o que a pessoa acertou com certeza.
+
+## 3. Escrever: as regras da frente que mais importam
+1. **Pergunta direta por padrão**, sem introdução de caso concreto. Caso só quando a resposta depende de
+   reconhecer fatos; aí, curto e com quesito neutro. Em dúvida, direta.
+2. **Neutra: não entrega nem pressupõe a resposta.** "Em que condição X pode ser atingido?" → "X pode ser atingido?".
+   Não embutir na pergunta a crítica, o requisito ou a consequência cobrados.
+3. **Nunca exige decorar número** de artigo, súmula, tema ou lei; números só no verso.
+4. **A frente puxa tudo o que o verso cobra**; o verso responde exatamente a pergunta e só aprofunda.
+5. Nada de pergunta vaga ("Qual o entendimento sobre X?", "Fale sobre X").
+
+## 4. Conferir antes de validar
+Leia cada frente **sozinha**, como quem vai revisar no Anki amanhã:
+- Dá para responder sem ter visto o verso? A pergunta é inequívoca?
+- Ela sugere a resposta (sim/não, condição, alternativa)?
+- Tem regra no verso que a pergunta não provoca? → novo card.
+- Tudo no verso bate com a fonte?
+
+## 5. Gravar, validar e mostrar
+1. Grave o TSV (UTF-8, TAB, sem cabeçalho): `frente<TAB>verso<TAB>tags`, com a tag `<slug-materia>::<slug-assunto>`
+   (e `revisao-voz-alta`, se vier de sessão). Local: `sessoes/<sessão>/flashcards.tsv` se vier de sessão; senão,
+   `flashcards/<AAAA-MM-DD>_<assunto>.tsv`.
+2. `cards.py validar ARQ.tsv` → corrija até zerar os erros; leia os avisos (pressupor resposta, frente longa).
+   Se vier de sessão, rode também `python scripts/sessao.py cards sessoes/<sessão>` (registra no histórico).
+3. `cards.py preview ARQ.tsv --titulo "Flashcards: <assunto>"` → envie o PDF para a pessoa ver.
+
+## 6. Enviar para o Anki
+Precisa do Anki aberto com o add-on **anki-mcp** (porta 3141, ou a variável `ANKI_MCP_URL`).
+- `cards.py anki ARQ.tsv --materia "<Matéria>" --assunto "<Assunto>"`
+  - **Baralho:** `Baralho Anki` do `perfil.md` (com `{materia}` e `{assunto}`); sem isso,
+    `Revisão em voz alta::<Matéria>::<Assunto>`. `--deck` sobrepõe.
+  - **Tipo de nota:** `Tipo de nota Anki` do `perfil.md`; sem isso, `Revisão em voz alta - Pergunta`, criado
+    automaticamente. Um tipo próprio precisa ter os campos Pergunta, Fundamento, Matéria, Assunto, Identificação e Mais.
+  - Na primeira vez cria as notas e grava os ids em `ARQ.anki.json`; depois **atualiza** as mesmas notas (corrigir
+    um card = editar o TSV e rodar de novo; o histórico de revisão no Anki é mantido). Card novo vai no **fim** do TSV.
+  - Ao final, confere se o Anki ficou idêntico ao TSV.
+- Sem o add-on: importar à mão (Arquivo → Importar → o TSV, separador Tab, permitir HTML, campo 3 = Tags).
+- Cards que não aparecem logo após o envio: é atualização da tela do Anki; abrir o navegador de cards resolve.

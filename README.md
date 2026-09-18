@@ -42,7 +42,7 @@ No fim de qualquer sessão, a skill `analise-desempenho-revisao` consolida o his
    - **Avaliação em segundo plano**: um subagente corrige e registra cada resposta enquanto a próxima pergunta já aparece.
 4. Ao encerrar, você recebe:
    - `sessoes/<data>_<tema>/revisao.pdf` e `revisao.docx`: o material dirigido às suas lacunas;
-   - `sessoes/<data>_<tema>/flashcards.tsv`: flashcards no estilo Notion; importe no Anki (Arquivo → Importar; separador Tab; permitir HTML; 3º campo = Tags);
+   - `sessoes/<data>_<tema>/flashcards.tsv`: flashcards no estilo Notion, gerados pela skill `flashcards-estudo`. Com o add-on anki-mcp, ela envia direto ao Anki (baralho e tipo de nota em `perfil.md`); sem ele, importe à mão (Arquivo → Importar; separador Tab; permitir HTML; 3º campo = Tags). A mesma skill cria cards de qualquer material, fora das sessões;
    - o painel atualizado em `desempenho/painel.md`.
 
 Tem questões e espelhos de provas anteriores? Coloque em `banco/`: as skills usam como base de perguntas e rubricas.
@@ -81,7 +81,7 @@ Detalhes: `.claude/skills/analise-desempenho-revisao/references/formato-desempen
 ## Estrutura
 ```
 CLAUDE.md                     regras gerais (carregadas automaticamente)
-.claude/skills/               as 3 skills e seus guias (rubrica, estilos de banca, modelo do material e dos flashcards)
+.claude/skills/               as 4 skills e seus guias (rubrica, estilos de banca, modelo do material e dos flashcards)
 scripts/sessao.py             abertura, sessões, registro, métricas, consolidação, flashcards
 scripts/extrair_material.py   PDF/DOCX/TXT → texto.md + índice
 scripts/gerar_material.py     revisao.md → revisao.pdf (gerar_pdf.py) + revisao.docx (gerar_docx.js)

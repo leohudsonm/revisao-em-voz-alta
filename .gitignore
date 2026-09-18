@@ -25,3 +25,6 @@ dashboard/dados.js
 
 # Node
 node_modules/
+
+# flashcards avulsos (skill flashcards-estudo)
+flashcards/

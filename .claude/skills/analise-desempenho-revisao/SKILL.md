@@ -45,19 +45,12 @@ Com a saída de `metricas` (não releia o `sessao.jsonl` inteiro, a menos que pr
 ## 4. Flashcards (só lacunas importantes)
 1. Leia a seção "Flashcards já gerados" dos arquivos de tópico envolvidos (`python scripts/sessao.py topico ...`)
    para não repetir.
-2. Siga a skill **`flashcards-estudo`** (`.claude/skills/flashcards-estudo/SKILL.md` e
-   `references/modelo-notion.md`), com a sessão como fonte: 1 lacuna autônoma = 1 card, importância ≥ 2 ou
-   recorrente, erros conceituais sempre viram card (callout 🚫), **pergunta direta e neutra**, nunca número de
-   artigo, súmula, tema ou lei na frente.
-3. Grave `sessoes/<sessão>/flashcards.tsv` (`frente<TAB>verso<TAB>tags`), com as tags
-   `<slug-da-disciplina>::<slug-do-tópico>` (ex.: `direito-civil::usucapiao`) e `revisao-voz-alta`.
-4. **Auditoria final obrigatória** (passo 6 da skill `flashcards-estudo`): um subagente revisor independente julga
-   cada card contra a fonte e as lacunas da sessão (`references/revisor.md`); reescreva os reprovados até aprovarem
-   (máximo de 3 tentativas; depois disso, o card fica fora).
-4.1. Só com os cards aprovados: `python scripts/sessao.py cards sessoes/<sessão>` → **valida o formato**, remove
-   duplicados e registra os cards no histórico. Corrija até passar.
-5. **Anki (opcional)**: ofereça enviar com `cards.py anki` (passo 7 da skill `flashcards-estudo`); o baralho e o
-   tipo de nota vêm do `perfil.md`.
+2. Siga a skill **`flashcards-estudo`** integralmente, com a sessão como fonte (Fase 0, "Sessão de revisão"):
+   análise das lacunas e dos erros, anúncio da estratégia, construção no formato de `references/modelo-notion.md`
+   (pergunta direta por padrão, verso Notion com bloco-âncora fiel ao material) e o **gate de duas camadas**
+   (`cards.py validar` + revisor independente da skill `flashcards-estudo-revisor`, até 3 tentativas por card).
+3. Só com os cards aprovados: `python scripts/sessao.py cards sessoes/<sessão>` (registra no histórico), o PDF de
+   visualização e, se a pessoa quiser, o envio ao Anki (`cards.py anki`; baralho e tipo de nota do `perfil.md`).
 
 ## 5. Atualizar o dashboard
 O `consolidar` e o `cards` já regeneram `dashboard/dados.js`; falta só publicar.

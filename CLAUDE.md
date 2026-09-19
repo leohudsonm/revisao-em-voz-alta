@@ -10,7 +10,7 @@ entrega um material de revisão (DOCX e PDF) dirigido às lacunas e flashcards n
 | Revisar para **prova discursiva**, dissertação, sentença, peça, oral | `revisao-discursiva-oral` |
 | Revisar para **prova objetiva** (múltipla escolha ou certo/errado) | `revisao-objetiva` |
 | "Encerrar", "fechar a sessão", "gerar o material/PDF", "flashcards das lacunas" | `analise-desempenho-revisao` |
-| "Flashcards", "cria cards disso", "manda pro Anki" (de um material ou fora do fechamento) | `flashcards-estudo` |
+| "Flashcards", "cria cards disso", "manda pro Anki" (de um material ou fora do fechamento) | `flashcards-estudo` (o gate usa `flashcards-estudo-revisor`) |
 | "Abrir/atualizar o dashboard", "ver meu desempenho" | `python scripts/sessao.py exportar` e publicar como no passo 5 de `analise-desempenho-revisao` |
 
 Se o pedido não deixar claro o modo, pergunte uma única vez: discursiva ou objetiva.

@@ -40,6 +40,13 @@ RE_PEDE_NUMERO = re.compile(
     re.I,
 )
 RE_VAGA = re.compile(r"qual\s+(é\s+)?o\s+entendimento\s+(sobre|acerca)|^\s*(fale|explique|discorra)\b", re.I)
+# Frente que nomeia a propriedade testada ou lista as alternativas: a resposta vem de graça (veto).
+RE_TELEGRAFA = re.compile(
+    r"cumulativ|taxativ|exemplificativ|\bou\s+n[ãa]o\b|\bpor\s+si\s+s[óo]s?\b|\bbastam?\b|\bmesmo\s+que\b|"
+    r"\bainda\s+que\b|\bapenas\b|\bsem\s+mais\b|\bextingue\s+ou\b|\bprova\s+pr[ée]via\b",
+    re.I,
+)
+RE_ALTERNATIVA_FINAL = re.compile(r"\bou\s+[^,?]{1,40}\?\s*$", re.I)
 RE_PRESSUPOE = re.compile(r"^\s*(em\s+que\s+(condi[çc][õo]es?|hip[óo]teses?|casos?)|quando)\b.*\bpode", re.I)
 
 
@@ -64,10 +71,25 @@ def validar_card(n: int, frente: str, verso: str) -> tuple[list[str], list[str]]
         e.append("frente exige decorar número; pergunte o conteúdo")
     if RE_VAGA.search(frente):
         e.append("pergunta vaga (\"qual o entendimento sobre\", \"fale/explique\")")
+    if RE_TELEGRAFA.search(frente):
+        e.append("frente telegrafa: nomeia a propriedade testada, lista alternativas ou usa qualificador indutor; pergunte o conteúdo (\"quais são os requisitos?\", \"qual o efeito?\")")
+    if RE_ALTERNATIVA_FINAL.search(frente):
+        a.append("frente termina oferecendo alternativas (\"... A ou B?\"); confira se não entrega a resposta")
     if RE_PRESSUPOE.search(frente):
         a.append("frente parece pressupor a resposta (\"em que condição ... pode\"); prefira \"X pode ...?\"")
     if len(frente) > 400:
         a.append(f"frente com {len(frente)} caracteres: é caso concreto? só se a resposta depender de reconhecer fatos")
+    if frente.count("?") > 1:
+        e.append("pergunta dupla (mais de um \"?\"); divida em dois cards")
+    if re.search(r"Rel\.\s*Min\.|\bRelator\b|julgad[oa] em|\bInfo(rmativo)?\s*\d|\b(REsp|AgRg|AREsp|EREsp|RE|HC)\s*\d", frente):
+        e.append("aparato de precedente na frente (processo, relator, data, informativo)")
+    if re.search(r"\bart\.?\s*\d", frente, re.I):
+        a.append("frente cita número de artigo: cobre a regra, não o número (o artigo vai na âncora e na citação)")
+    for x, y in (("constitucional", "inconstitucional"), ("incide", "não incide"), ("válido", "inválido"),
+                 ("nulo", "anulável"), ("cabe", "não cabe")):
+        if re.search(rf"\b{x}\b", frente, re.I) and re.search(rf"\b{y}\b", frente, re.I):
+            e.append(f"frente contrasta \"{x}\" e \"{y}\" (entrega a dicotomia)")
+            break
     for campo, txt in (("frente", frente), ("verso", verso)):
         if "—" in txt or "–" in txt:
             e.append(f"travessão na {campo}")
@@ -92,11 +114,24 @@ def validar_card(n: int, frente: str, verso: str) -> tuple[list[str], list[str]]
             e.append("grifo amarelo sem <b>")
     if len(re.findall(r"border-radius:6px;padding:10px 12px", verso)) > 1:
         e.append("mais de 1 callout")
-    vis = len(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", verso)).strip())
-    if vis > 2000:
-        e.append(f"verso longo demais ({vis} caracteres visíveis)")
-    elif vis < 300:
-        a.append(f"verso curto ({vis} caracteres visíveis; alvo 500 a 1.500)")
+    if re.search(r"color:\s*(red|darkgreen)\b", verso, re.I):
+        e.append("cor antiga (color: red / darkgreen); use #A03A38 ou #3B6A45")
+    if not re.search(r'<p style="margin:12px 0 0;font-size:13px;color:#787774;"><em>\([^<]+\)</em></p>', verso):
+        e.append("verso sem a citação final <em>(...)</em> no parágrafo cinza")
+    if not re.search(r"(📜|📚|⚖️|🎯)\s*<b>\s*(Dispositivo|Doutrina|Tese do julgado|Teses do julgado|Tese central)\s*:</b>", verso, re.I):
+        a.append("verso sem bloco-âncora rotulado (📜 Dispositivo, 📚 Doutrina, ⚖️ Tese do julgado, 🎯 Tese central)")
+    elif not re.search(r'<ol style="[^"]*">\s*<li', verso):
+        a.append("bloco-âncora fora de lista numerada <ol>")
+    if len(re.findall(r"<table", verso)) > 1:
+        e.append("mais de 1 tabela")
+    sem_tabela = re.sub(r"<table.*?</table>", " ", verso, flags=re.S)
+    vis = len(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", sem_tabela)).strip())
+    if vis > 2600:
+        e.append(f"verso longo demais ({vis} caracteres visíveis; alvo 1.100 a 1.900, teto 2.600)")
+    elif vis > 1900:
+        a.append(f"verso com {vis} caracteres visíveis (alvo 1.100 a 1.900)")
+    elif vis < 900:
+        a.append(f"verso com {vis} caracteres visíveis: card raso? (alvo 1.100 a 1.900)")
     return [f"card {n}: {x}" for x in e], [f"card {n}: {x}" for x in a]
 
 

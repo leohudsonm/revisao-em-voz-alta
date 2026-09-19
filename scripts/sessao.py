@@ -571,9 +571,10 @@ def validar_card_notion(n: int, frente: str, verso: str) -> list[str]:
     callouts = len(re.findall(r"border-radius:6px;padding:10px 12px", verso))
     if callouts > 1:
         p.append(f"{callouts} callouts (máx. 1)")
-    visivel = len(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", verso)).strip())
-    if visivel > 2000:
-        p.append(f"verso longo demais ({visivel} caracteres visíveis; alvo 500 a 1.500)")
+    sem_tabela = re.sub(r"<table.*?</table>", " ", verso, flags=re.S)
+    visivel = len(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", sem_tabela)).strip())
+    if visivel > 2600:
+        p.append(f"verso longo demais ({visivel} caracteres visíveis; alvo 1.100 a 1.900, teto 2.600)")
     return [f"card {n}: {x}" for x in p]
 
 

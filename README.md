@@ -81,7 +81,7 @@ Detalhes: `.claude/skills/analise-desempenho-revisao/references/formato-desempen
 ## Estrutura
 ```
 CLAUDE.md                     regras gerais (carregadas automaticamente)
-.claude/skills/               as 4 skills e seus guias (rubrica, estilos de banca, modelo do material e dos flashcards)
+.claude/skills/               as 5 skills e seus guias (rubrica, estilos de banca, modelo do material e dos flashcards)
 scripts/sessao.py             abertura, sessões, registro, métricas, consolidação, flashcards
 scripts/extrair_material.py   PDF/DOCX/TXT → texto.md + índice
 scripts/gerar_material.py     revisao.md → revisao.pdf (gerar_pdf.py) + revisao.docx (gerar_docx.js)

@@ -1,11 +1,12 @@
 ---
 name: flashcards-estudo
-description: Cria flashcards de estudo no estilo Notion a partir de um material (livro, fotos de páginas, PDF, resumo, aula) ou das lacunas de uma sessão de revisão, valida o formato, gera um PDF de visualização e envia para o Anki (baralho e tipo de nota do perfil.md). Use quando a pessoa pedir "flashcards", "cards", "cria cards disso", "manda pro Anki", ou no passo de flashcards da skill analise-desempenho-revisao.
+description: Cria flashcards de estudo no estilo Notion a partir de um material (livro, fotos de páginas, PDF, resumo, aula) ou das lacunas de uma sessão de revisão, valida o formato, submete todos os cards a uma auditoria final por revisor independente, gera um PDF de visualização e envia para o Anki (baralho e tipo de nota do perfil.md). Use quando a pessoa pedir "flashcards", "cards", "cria cards disso", "manda pro Anki", ou no passo de flashcards da skill analise-desempenho-revisao.
 ---
 
 # Flashcards de estudo
 
 Formato completo, com paleta, blocos e exemplo: `references/modelo-notion.md` (leia antes de escrever os cards).
+Auditoria final obrigatória: `references/revisor.md` (passo 6). Nenhum card vai para o Anki sem aprovação.
 Script: `python .claude/skills/flashcards-estudo/scripts/cards.py {validar|preview|anki}` (no Windows, `py` se
 `python` não existir).
 
@@ -37,15 +38,33 @@ Leia cada frente **sozinha**, como quem vai revisar no Anki amanhã:
 - Tem regra no verso que a pergunta não provoca? → novo card.
 - Tudo no verso bate com a fonte?
 
-## 5. Gravar, validar e mostrar
+## 5. Gravar e validar (checagem mecânica)
 1. Grave o TSV (UTF-8, TAB, sem cabeçalho): `frente<TAB>verso<TAB>tags`, com a tag `<slug-materia>::<slug-assunto>`
    (e `revisao-voz-alta`, se vier de sessão). Local: `sessoes/<sessão>/flashcards.tsv` se vier de sessão; senão,
    `flashcards/<AAAA-MM-DD>_<assunto>.tsv`.
 2. `cards.py validar ARQ.tsv` → corrija até zerar os erros; leia os avisos (pressupor resposta, frente longa).
-   Se vier de sessão, rode também `python scripts/sessao.py cards sessoes/<sessão>` (registra no histórico).
-3. `cards.py preview ARQ.tsv --titulo "Flashcards: <assunto>"` → envie o PDF para a pessoa ver.
 
-## 6. Enviar para o Anki
+## 6. Auditoria final (obrigatória, antes de mostrar e de enviar)
+Passar no validador **não** é estar pronto: ele só confere o formato. A qualidade é julgada por um **revisor
+independente**, seguindo `references/revisor.md` (padrão impecável, APPROVE ou REJECT por card).
+1. Lance um **subagente** (ferramenta Agent) que não participou da redação, com: o caminho do TSV, o de
+   `references/revisor.md` e `references/modelo-notion.md`, o baralho de destino e a **fonte** (arquivo e
+   páginas ou linhas do material; se vier de sessão, também `python scripts/sessao.py metricas sessoes/<sessão> --pontos`).
+   Peça o veredito de todos os cards e a pré-checagem do lote. Ele só aponta; não edita arquivos.
+   Sem a ferramenta Agent, faça a auditoria como uma passada separada, relendo a fonte antes dos cards e
+   preenchendo a tabela do revisor para cada card; nunca pule a etapa.
+2. Reescreva os cards reprovados atacando **todas** as alterações obrigatórias, rode `cards.py validar` de novo e
+   devolva ao revisor **só os reprovados**, com o número da tentativa. Crie, divida, consolide ou remova cards
+   conforme a pré-checagem do lote.
+3. Card com **3 REJECTs** fica fora do TSV e do Anki; mostre à pessoa o impasse.
+4. Registre o resultado em uma linha no chat: "Auditoria: N aprovados na 1ª, M reescritos, K fora".
+5. Só depois: se vier de sessão, `python scripts/sessao.py cards sessoes/<sessão>` (registra no histórico) e
+   `cards.py preview ARQ.tsv --titulo "Flashcards: <assunto>"` → envie o PDF para a pessoa ver.
+
+Cards já enviados que forem corrigidos depois (a pedido da pessoa) passam pela mesma auditoria antes de atualizar
+o Anki.
+
+## 7. Enviar para o Anki (só cards aprovados na auditoria)
 Precisa do Anki aberto com o add-on **anki-mcp** (porta 3141, ou a variável `ANKI_MCP_URL`).
 - `cards.py anki ARQ.tsv --materia "<Matéria>" --assunto "<Assunto>"`
   - **Baralho:** `Baralho Anki` do `perfil.md` (com `{materia}` e `{assunto}`); sem isso,

@@ -25,11 +25,13 @@ e você confia nele.
 Só vai para o Anki o card **impecável**. Qualquer detalhe fora do padrão é REJECT no revisor.
 
 **Cobertura**
-1. **Cada unidade de conhecimento autônoma da fonte vira card** (o que é "unidade" muda por tipo de fonte: ver
-   `references/fontes.md`). Mais de uma regra ou nuance de resultado próprio → 1 card para cada. Uma pergunta só
-   quando uma pergunta natural exige todas as nuances juntas (ex.: "quais são os requisitos de X?").
-2. Aparecer no bloco-âncora ou num bloco do verso por integridade **não é cobertura**: unidade que nenhuma pergunta
-   testa como foco é **órfã** e exige card próprio.
+1. **O card cobre um bloco temático**, do tamanho em que a prova cobra o assunto: conceito com efeitos, requisitos
+   com alcance, regra com exceção. Estilhaçar o bloco em vários cards atrapalha a revisão. (A regra de "uma unidade
+   por card" é dos cards de jurisprudência do Revisáculo, em que um julgado traz várias teses autônomas; aqui, o
+   material de estudo se revisa por bloco.)
+2. **A frente puxa tudo o que o verso cobra.** Regra autônoma que o verso traz mas a pergunta não provoca ou entra
+   na frente, ou vira card próprio: o verso só aprofunda a resposta da pergunta feita.
+3. O que importa é que **nada relevante da fonte fique sem card** e que **nenhum card repita outro**.
 
 **Pergunta**
 3. **Formato adequado à unidade testada:** **pergunta direta**, PREFERIDA, quando se testa o definicional ou literal
@@ -74,10 +76,11 @@ Identifique o **tipo de fonte** e siga o adaptador de `references/fontes.md`. Em
 - Liste as **unidades de conhecimento testáveis** (regra, conceito, distinção, requisitos, exceção, prazo, efeito).
   Vindo de sessão, a lista é das lacunas importantes (importância ≥ 2 ou recorrentes) e dos erros conceituais;
   nada sobre o que a pessoa acertou com certeza.
-- **Granularidade (1 unidade autônoma = 1 card, com o teste da "pergunta única"):** resultados próprios → cards
-  próprios; nuances que uma pergunta natural já exige juntas → 1 card; razões que levam à mesma resposta ficam no
-  verso. Não fragmente o que uma pergunta resolve; não comprima resultados distintos.
-- **Cobertura por foco:** cada unidade relevante tem um card que a testa como foco.
+- **Agrupe por bloco temático.** Em preparação para **discursiva**, a resposta é um bloco: vale perguntar mais de
+  uma coisa no mesmo card sempre que a banca cobraria as nuances juntas (requisitos e alcance, conceito e efeitos,
+  regra e exceção). A frente continua uma pergunta coerente, não duas perguntas sobre assuntos diferentes. Em
+  preparação para **objetiva**, o corte pode ser mais fino, porque a cobrança é ponto a ponto.
+- **Cobertura:** nada relevante da fonte (ou das lacunas da sessão) fica sem card; nenhum card repete outro.
 - **Anuncie a estratégia**, com o formato de cada card: "Fonte: livro (doutrina). Identifiquei N unidades. Vou gerar
   X cards (unidade A → direta, porque requisito; unidade B → caso, porque distinção que depende dos fatos)."
 

@@ -10,8 +10,8 @@ Adaptado do revisor dos flashcards do Revisáculo. É o gate entre o TSV validad
 ## Padrão de aprovação: IMPECÁVEL (zero-tolerância)
 Só é APPROVE o card **impecável**. **Qualquer detalhe fora do padrão é REJECT**, sem "quase lá" e sem "aprovado com
 ressalva": frente que telegrafa, âncora infiel, emoji no meio da frase, travessão, citação incompleta, verso fora do
-alvo de tamanho, grifo em frase inteira, tag divergente. Toda observação vira alteração obrigatória. **Na dúvida,
-reprove.** É preferível três rodadas a um card ruim no Anki.
+grifo em frase inteira, tag divergente. Toda observação vira alteração obrigatória. **Na dúvida sobre conteúdo, reprove.** É preferível três rodadas a um card ruim no Anki. Mas não reprove por
+preferência de estilo nem por número de cards: o que decide é o defeito objetivo desta especificação.
 
 ## Modelo mental
 Você é um avaliador rigoroso e impiedoso, não o redator. Tem sempre dois insumos:
@@ -24,25 +24,22 @@ Formato exigido: `.claude/skills/flashcards-estudo/references/modelo-notion.md`.
 
 Você só aponta: **não edita arquivos**.
 
-## Pré-checagem do lote (ANTES dos 13 critérios)
-*"Quando houver mais de uma regra, ou uma regra com mais de uma nuance, faz-se um card para cada; mas não se cria
-card desnecessário: se a resposta de um card exige conhecer todas as nuances, é um card só."*
+## Checagem do lote (ANTES dos 13 critérios)
+O material de estudo se revisa por **bloco temático**, não por unidade mínima: aqui não vale a regra de "uma tese
+autônoma por card", que é dos cards de jurisprudência do Revisáculo (um julgado com várias teses autônomas).
+Confira, nesta ordem:
 
-1. Liste as **unidades de conhecimento** da fonte (regra, conceito, distinção, requisitos, exceção, efeito) e, se
-   vier de sessão, as lacunas importantes e os erros conceituais.
-2. Classifique cada unidade:
-   - **Resultado próprio e não combinável** → exige card próprio.
-   - **Combinável numa pergunta única** (uma pergunta natural exige as duas, ex.: "quais são os requisitos?") → mesmo card.
-   - **Razão ou fundamento** que leva à mesma resposta → fica no verso, não vira card.
-   - **Irrelevante para prova**, ou já **entregue com segurança** na sessão → não vira card, salvo decisão da pessoa.
-3. **Cobertura por foco:** para cada unidade de resultado próprio, aponte QUAL card a testa como foco. Aparecer na
-   âncora ou num bloco do verso não é cobertura: unidade sem card-foco é **órfã** → REJECT do lote ("criar card para <unidade>").
-4. **Card desnecessário:** dois cards que se respondem mutuamente ou separam meras razões → REJECT ("consolidar").
-5. **Regra de carona:** verso com regra autônoma que a frente não provoca → REJECT do card ("dividir").
-6. **Pergunta dupla** → REJECT do card ("dividir").
+1. Liste o que a fonte tem de relevante e, se os cards vierem de sessão, as lacunas importantes e os erros conceituais.
+2. **Cobertura:** algo relevante ficou sem nenhum card? → REJECT do lote ("criar card para <ponto>").
+3. **Repetição:** dois cards que cobram a mesma coisa, ou cujas perguntas se respondem mutuamente → REJECT ("consolidar").
+4. **Estilhaçamento:** cards que quebram um bloco que a prova cobra junto (requisitos e alcance, conceito e efeitos,
+   regra e exceção) → REJECT ("reunir num card"). Pergunta composta é permitida e, na discursiva, desejável; só é
+   defeito a frente que junta **assuntos diferentes**, sem resposta única coerente.
+5. **Regra de carona:** o verso traz regra autônoma que a frente não provoca → REJECT ("levar para a frente ou
+   fazer card próprio").
+6. **Card dispensável:** obviedade, curiosidade ou ponto que a pessoa já domina, salvo decisão dela → REJECT ("remover").
 
-Se a pré-checagem falhar para um card, devolva REJECT sem pontuar os 13 critérios, com a alteração "dividir,
-consolidar, criar ou remover".
+Se a checagem falhar para um card, devolva REJECT sem pontuar os 13 critérios, com a alteração correspondente.
 
 ## Critérios (13, escala 1 a 10)
 
@@ -50,7 +47,7 @@ consolidar, criar ou remover".
 | ID | Critério | O que verifica |
 |---|---|---|
 | P1 | **Formato adequado (direta por padrão)** | Pergunta direta sempre que a unidade é definicional (conceito, requisito, efeito, prazo, rol, quem pode, distinção). **Caso concreto só quando a resposta depende de reconhecer fatos**; caso usado como enfeite de pergunta que seria direta é defeito. Caso, quando cabível: um parágrafo curto (até ~400 caracteres), começando com artigo, só os fatos decisivos. |
-| P2 | **Fechada e inequívoca** | Uma resposta certa identificável; uma pergunta só; nada vago ("qual o entendimento sobre", "fale sobre", "critério de X" sem dizer o aspecto). |
+| P2 | **Fechada e inequívoca** | Resposta certa identificável. Pode reunir mais de uma nuance do mesmo bloco (na discursiva, é o desejável), desde que a frente seja uma pergunta coerente, não duas perguntas sobre assuntos diferentes. Nada vago ("qual o entendimento sobre", "fale sobre", "critério de X" sem dizer o aspecto). |
 | P3 | **Crua e enxuta** | Só o necessário; sem aparato (processo, relator, data, informativo, doutrinador, obra) nem fecho "à luz do art. X"; sem parênteses que só rotulam dispositivo. |
 | **P4** | **NÃO telegrafa (veto)** | Nota no máximo 3, e REJECT, quando a frente: (a) **lista alternativas** ("A ou B?", "ou não?"); (b) **nomeia a propriedade testada pedindo só sim ou não** ("são cumulativos?", "é taxativo?", "extingue ou anula?", "suspende o processo?", "exige prova prévia de X?"); (c) usa **qualificador indutor** ("por si só", "basta", "apenas", "mesmo que", "ainda que", "sem mais") ou palavra de ligação que marca o fato decisivo ("mas se retirou"); (d) **importa o rótulo ou a conclusão jurídica** para os fatos; (e) **embute a condição que destrava a resposta** ou **pressupõe a resposta** ("em que condição X pode..."); (f) **exige decorar número** de artigo, súmula, tema ou lei. A frente pergunta o conteúdo, crua e neutra; a condição e a conclusão vão no verso. |
 

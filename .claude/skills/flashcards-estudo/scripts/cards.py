@@ -80,7 +80,8 @@ def validar_card(n: int, frente: str, verso: str) -> tuple[list[str], list[str]]
     if len(frente) > 400:
         a.append(f"frente com {len(frente)} caracteres: é caso concreto? só se a resposta depender de reconhecer fatos")
     if frente.count("?") > 1:
-        e.append("pergunta dupla (mais de um \"?\"); divida em dois cards")
+        a.append("frente com mais de uma pergunta: ok se as partes formam um bloco que a prova cobra junto; "
+                 "se são assuntos diferentes, divida")
     if re.search(r"Rel\.\s*Min\.|\bRelator\b|julgad[oa] em|\bInfo(rmativo)?\s*\d|\b(REsp|AgRg|AREsp|EREsp|RE|HC)\s*\d", frente):
         e.append("aparato de precedente na frente (processo, relator, data, informativo)")
     if re.search(r"\bart\.?\s*\d", frente, re.I):
@@ -118,7 +119,7 @@ def validar_card(n: int, frente: str, verso: str) -> tuple[list[str], list[str]]
         e.append("cor antiga (color: red / darkgreen); use #A03A38 ou #3B6A45")
     if not re.search(r'<p style="margin:12px 0 0;font-size:13px;color:#787774;"><em>\([^<]+\)</em></p>', verso):
         e.append("verso sem a citação final <em>(...)</em> no parágrafo cinza")
-    if not re.search(r"(📜|📚|⚖️|🎯)\s*<b>\s*(Dispositivo|Doutrina|Tese do julgado|Teses do julgado|Tese central)\s*:</b>", verso, re.I):
+    if not re.search(r"(📜|📚|⚖️|🎯)\s*<b>[^<]{3,60}:</b>", verso, re.I):
         a.append("verso sem bloco-âncora rotulado (📜 Dispositivo, 📚 Doutrina, ⚖️ Tese do julgado, 🎯 Tese central)")
     elif not re.search(r'<ol style="[^"]*">\s*<li', verso):
         a.append("bloco-âncora fora de lista numerada <ol>")
@@ -224,7 +225,14 @@ def cmd_anki(tsv: Path, materia: str, assunto: str, deck: str | None, modelo: st
     try:
         _tool("create_deck", {"deck_name": deck})
     except RuntimeError as e:
-        if "exist" not in str(e).lower():
+        msg = str(e).lower()
+        # o add-on anki-mcp recusa criar deck com mais de 2 niveis; se o deck ja existe
+        # (criado a mao ou por change_deck), seguir em frente
+        if "exist" in msg:
+            pass
+        elif "levels" in msg and any(d.get("name") == deck for d in _tool("list_decks", {}).get("decks", [])):
+            pass
+        else:
             raise
     ids = mapa["ids"]
     novos = 0

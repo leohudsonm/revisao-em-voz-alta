@@ -25,7 +25,9 @@ Cada linha do TSV é um card: `frente<TAB>verso<TAB>tags`, UTF-8, sem cabeçalho
   Caso usado como enfeite de uma pergunta que seria direta é defeito.
 - **Pergunta vaga não é pergunta direta:** "Qual o entendimento sobre X?", "Fale sobre X", "Explique X" e "Qual o
   critério de X?" sem dizer qual aspecto são vedadas.
-- **Uma pergunta só.** Frente com duas perguntas independentes ("qual o efeito e qual o prazo?") vira dois cards.
+- **Pode perguntar mais de uma coisa** quando as partes formam um bloco que a prova cobra junto (requisitos e
+  alcance, conceito e efeitos, regra e exceção). Na preparação para discursiva isso é o desejável: a resposta é um
+  bloco. Vira dois cards só quando a frente junta **assuntos diferentes**, sem resposta única coerente.
 
 ## 2. Neutra: a frente não entrega a resposta (veto)
 - **Não nomeia a propriedade testada pedindo só sim ou não.** "São cumulativos?", "O rol é taxativo?", "Extingue ou

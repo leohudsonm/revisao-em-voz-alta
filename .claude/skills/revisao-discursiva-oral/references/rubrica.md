@@ -5,7 +5,7 @@ Ela imita o espelho de correção das bancas: uma lista de pontos, cada um com p
 
 ## 1. Montagem
 - De 3 a 6 pontos por pergunta (ou item).
-- Cada ponto é **uma ideia verificável**: conceito, requisito, distinção, corrente, tese de tribunal, dispositivo,
+- Cada ponto é **uma ideia verificável**: conceito, requisito, distinção, corrente, solução consolidada,
   consequência prática, solução do caso.
 - Pesos:
   | Peso | Valor | O que é |
@@ -19,13 +19,15 @@ Ela imita o espelho de correção das bancas: uma lista de pontos, cada um com p
 ## 2. Status de cada ponto
 | Status | Crédito | Quando |
 |---|---|---|
-| ✅ entregou | 100% | a ideia foi dita de forma correta e suficiente, mesmo sem o número do artigo |
+| ✅ entregou | 100% | a ideia foi dita de forma correta e suficiente |
 | ◐ parcial | 50% | tangenciou, faltou o elemento que torna o ponto completo, ou disse o requisito sem a consequência |
 | ❌ faltou | 0% | não apareceu |
 | ⚠️ erro conceitual | 0% e −1 ponto na nota final (mínimo 0) | afirmou algo juridicamente errado sobre o ponto |
 
-- Citar o dispositivo, súmula ou tese **não é obrigatório** para "entregou", salvo quando a pergunta pede
-  expressamente a posição de um tribunal ou o fundamento legal. Mas, se a pessoa citar **errado**, registre como erro conceitual.
+- **Nenhum ponto da rubrica é número ou referência.** Dispositivo, súmula, tema, julgado ou "posição do STJ" não
+  são pontos: o ponto é o **conteúdo** (a regra, a solução, a razão). Número citado, certo ou errado, não se
+  avalia: a revisão é falada e dinâmica, e exigir memória de número é falha lógica do treino. A correção, porém,
+  **sempre mostra** o fundamento de cada ponto (dispositivo, súmula, tema, julgado), para estudo.
 - Contradição interna (disse certo e depois o contrário) = parcial.
 - Resposta correta, mas fora do que foi perguntado, não pontua.
 

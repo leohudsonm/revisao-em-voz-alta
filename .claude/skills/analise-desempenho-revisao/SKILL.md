@@ -80,6 +80,7 @@ e, logo abaixo, a correção:
 ◐ <ponto parcial>. Faltou: <o quê>
 ❌ <ponto não entregue>. <conteúdo esperado e fundamento em 1 ou 2 linhas>
 ⚠️ Erro conceitual: <o que foi dito> → correto: <o que é>
+📚 Fundamento: <dispositivos, súmulas, julgados: para estudo, não cobrados>
 **Para fechar o ponto na prova:** <1 ou 2 frases com o núcleo que o examinador procura>
 ```
 Nas objetivas, o mesmo formato traz: o enunciado com as alternativas, o gabarito comparado com a resposta e a

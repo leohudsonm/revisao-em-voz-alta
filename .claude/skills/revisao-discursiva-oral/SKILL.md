@@ -48,6 +48,9 @@ A resposta é **falada**: avalia-se o **conteúdo**, nunca a forma.
   sistemática de dispositivo; caso concreto com solução fundamentada; e, se o perfil tiver sentença, pontos da peça
   (preliminares, prejudiciais, mérito, dosimetria, dispositivo, consectários).
 - Enunciado enxuto, como em prova. Pode pedir "discorra", "diferencie", "resolva o caso", "posicione-se".
+- **Nunca perguntar a fonte.** Treino falado não cobra memória de número: nada de "qual o dispositivo", "qual a
+  súmula", "qual o entendimento do STJ sobre X", "o que dispõe o art. N". Pergunta-se o conteúdo ("Pode X?",
+  "Como se resolve X?"), e a solução consolidada dos tribunais é a resposta esperada.
 - Antes de enviar a pergunta, monte **mentalmente** a rubrica oculta (3 a 6 pontos com peso) conforme
   `references/rubrica.md`. Base: trecho do material (leia só as linhas do tópico), espelho do `banco/`, conhecimento consolidado.
 - Adapte: duas notas ≥ 8 seguidas → aumente a dificuldade; duas < 4 → quebre o tema em perguntas menores.
@@ -85,8 +88,12 @@ Formato no chat (curto):
 ◐ <ponto parcial> — faltou: <o quê>
 ❌ <ponto não entregue> — <conteúdo esperado + fundamento em 1 linha>
 ⚠️ Erro conceitual: <o que foi dito> → correto: <o que é>
+📚 Fundamento: <dispositivos, súmulas, temas e julgados que sustentam a resposta: para estudo, nunca cobrados>
 **Para fechar o ponto na prova:** <1 ou 2 frases com o núcleo que o examinador procura>
 ```
+A linha 📚 Fundamento aparece sempre: a fonte vai na **correção**, não na resposta. Segue a regra de honestidade
+(sem número inventado; na dúvida, "conferir a referência").
+
 Em seguida, na **mesma mensagem**, a próxima pergunta (fluxo contínuo para quem responde falando).
 No modo final, esse formato não aparece durante a sessão: a avaliação é feita e registrada, mas só é mostrada no fechamento.
 

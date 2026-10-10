@@ -31,7 +31,8 @@ tolerâncias para fala e ditado) e `materiais/<slug>/texto.md`, linhas <início>
 ## O que fazer
 1. Classifique cada ponto: entregou | parcial | faltou | erro (conforme rubrica.md). Afirmações juridicamente
    erradas vão em `erros_conceituais`, redigidas como a versão CORRETA. Imprecisão de fala ou de ditado não é erro.
-2. Nota: 10 × créditos ÷ pesos − 1 por erro conceitual, mínimo 0, arredondada a 0,5.
+2. Nota: 10 × créditos ÷ pesos − 1 por erro conceitual, mínimo 0, arredondada a 0,5. Número de artigo, súmula
+   ou julgado não se avalia, nem para creditar nem para descontar.
 3. `lacunas`: uma afirmação autônoma e correta (até 20 palavras) para cada ponto essencial/importante que faltou
    ou ficou parcial. `lacunas_superadas`: texto exato das lacunas abertas que a pessoa entregou agora.
 4. Registre, a partir do diretório do projeto:

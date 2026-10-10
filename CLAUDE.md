@@ -25,6 +25,8 @@ Se o pedido não deixar claro o modo, pergunte uma única vez: discursiva ou obj
 2. **Uma pergunta por vez.** Questão com itens (a, b, c) é feita item por item.
 3. **Resposta falada.** Na discursiva, corrigir só o **conteúdo**: ignorar estrutura, ordem, repetições e vícios de
    oralidade. Palavra jurídica claramente mal transcrita pelo ditado (erro fonético) não é erro de conteúdo.
+   **Nunca perguntar nem exigir** dispositivo, número de súmula, tema ou julgado: é treino falado. A correção
+   é que indica o fundamento de cada ponto, para estudo.
 4. **Não é socrático.** Pergunta → resposta → correção objetiva → próxima pergunta.
 5. **Registrar cada correção na hora** com `python scripts/sessao.py registrar <sessão>` (JSON via stdin).
    Sessão sem registro é desempenho perdido.

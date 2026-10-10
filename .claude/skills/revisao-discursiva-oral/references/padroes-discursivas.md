@@ -17,7 +17,7 @@ Defensoria, procuradorias, delegado, cartórios, carreiras de tribunal com discu
 | Distinção | "Diferencie X de Y, indicando os efeitos práticos." | critério distintivo; efeitos de cada um; exemplo |
 | Requisitos | "Quais os requisitos de X? Há requisito não previsto expressamente em lei?" | requisitos legais; requisito jurisprudencial/doutrinário |
 | Divergência | "Há controvérsia sobre X? Exponha as correntes e o entendimento dos tribunais superiores." | corrente A; corrente B; posição STF/STJ; eventual superação |
-| Jurisprudência | "Qual o entendimento do STJ sobre X? Houve mudança recente?" | tese atual; fundamento; tese anterior e razão da virada |
+| Solução consolidada | "Pode X?" / "Como se resolve X?" (a solução dos tribunais é a resposta esperada; nunca perguntar "qual o entendimento do STJ" nem a súmula) | tese atual; fundamento; tese anterior e razão da virada |
 | Caso concreto | "Fulano fez tal coisa. Analise a situação jurídica e indique a solução." | enquadramento; requisitos no caso; solução; fundamento |
 | Constitucionalidade | "A lei que prevê X é constitucional?" | parâmetro constitucional; argumento pró e contra; posição do STF |
 | Interpretação | "Como interpretar a expressão 'Y' do art. Z?" | sentido literal insuficiente; interpretação sistemática; entendimento prevalente |
